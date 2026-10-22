@@ -1,0 +1,301 @@
+"use strict";
+(() => {
+	const pages = {
+		games: document.getElementById("games-page"),
+		apps: document.getElementById("apps-page"),
+	};
+	const navs = {
+		games: document.getElementById("nav-games"),
+		apps: document.getElementById("nav-apps"),
+	};
+	const home = document.getElementById("home");
+	const navHome = document.getElementById("nav-home");
+
+	let current = null;
+	let animating = false;
+
+	function hide(el, nav, then) {
+		animating = true;
+		el.classList.remove("open");
+		el.classList.add("closing");
+		if (nav) nav.classList.remove("active");
+		const done = (e) => {
+			if (e.target !== el) return;
+			el.removeEventListener("animationend", done);
+			el.classList.remove("closing");
+			el.hidden = true;
+			animating = false;
+			if (then) then();
+		};
+		el.addEventListener("animationend", done);
+	}
+
+	function openPage(name) {
+		if (animating) return;
+		if (current === name) {
+			closeCurrent();
+			return;
+		}
+		const show = () => {
+			const el = pages[name];
+			el.hidden = false;
+			el.classList.remove("closing");
+			el.classList.add("open");
+			navs[name].classList.add("active");
+			current = name;
+		};
+		if (current) hide(pages[current], navs[current], show);
+		else show();
+	}
+
+	function closeCurrent(then) {
+		if (!current) {
+			if (then) then();
+			return;
+		}
+		const name = current;
+		current = null;
+		hide(pages[name], navs[name], then);
+	}
+
+	// ---- catalogues ----
+	const GAMES = [
+		{
+			name: "Deltarune",
+			url: "https://d.ytsodacan.workers.dev/",
+			img: "games/deltarune.png",
+		},
+		{
+			name: "Roblox",
+			url: "/nowgg/",
+			img: "games/roblox.png",
+			local: true,
+			splash: "load",
+		},
+		{
+			name: "Idle Breakout",
+			url: "games/idle-breakout/game.html?nocheckorient=1",
+			img: "games/idlebreakout.png",
+			local: true,
+		},
+	];
+	const APPS = [
+		{
+			name: "Blooket Bot",
+			url: "https://blooketbot.neocities.org/",
+			img: "apps/blooketbot.png",
+		},
+		{
+			name: "Discord",
+			url: "https://discord.com/app",
+			img: "apps/discord.png",
+		},
+	];
+
+	const gl = document.getElementById("game-loader");
+	const MIN_SPLASH = 2000; // velocify splash shows at least this long
+	let glShownAt = 0;
+
+	function showGameLoader() {
+		if (!gl) return;
+		glShownAt = Date.now();
+		gl.hidden = false;
+		setTimeout(() => gl.classList.add("show"), 20);
+	}
+
+	// hide, but never before the splash has shown for MIN_SPLASH
+	function hideGameLoader() {
+		if (!gl || !gl.classList.contains("show")) return;
+		const wait = Math.max(0, MIN_SPLASH - (Date.now() - glShownAt));
+		setTimeout(() => {
+			gl.classList.remove("show");
+			const done = (e) => {
+				if (e.target !== gl) return;
+				gl.removeEventListener("transitionend", done);
+				gl.hidden = true;
+			};
+			gl.addEventListener("transitionend", done);
+			setTimeout(() => (gl.hidden = true), 700);
+		}, wait);
+	}
+
+	// self-hosted games (e.g. Idle Breakout) tell us when they've reached
+	// their game room, so we can lift the splash exactly then
+	let onGameReady = null;
+	window.addEventListener("message", (e) => {
+		if (e.data && e.data.velocify === "game-ready" && onGameReady) {
+			const cb = onGameReady;
+			onGameReady = null;
+			cb();
+		}
+	});
+
+	function launchLocal(url, g) {
+		// self-hosted game: load it directly (no proxy), same origin
+		showGameLoader();
+		closeCurrent();
+		const home = document.getElementById("home");
+		const view = document.getElementById("view");
+		home.hidden = true;
+		view.hidden = false;
+		document.body.classList.add("proxy-mode");
+		// hide any scramjet frame, drop any previous local frame
+		const sj = document.getElementById("sj-frame");
+		if (sj) sj.style.display = "none";
+		const prev = document.getElementById("sj-local");
+		if (prev) prev.remove();
+		const f = document.createElement("iframe");
+		f.id = "sj-local";
+		// cloud games need autoplay/fullscreen/gamepad unlocked in the frame
+		f.allow =
+			"autoplay; fullscreen; picture-in-picture; gamepad; microphone; camera; display-capture; keyboard-lock";
+		f.setAttribute("allowfullscreen", "");
+		const splashMode = (g && g.splash) || "ready";
+		let retries = 0;
+		// chrome error pages (refused/blocked loads) deny access to
+		// contentDocument -- catch that and reload once to recover
+		const checkLoaded = () => {
+			let accessible = false;
+			let empty = false;
+			let complete = false;
+			try {
+				const doc = f.contentDocument;
+				if (doc) {
+					accessible = true;
+					complete = doc.readyState === "complete";
+					const bodyText = (doc.body && doc.body.textContent) || "";
+					empty =
+						!doc.body ||
+						(doc.body.children.length === 0 &&
+							bodyText.trim().length === 0);
+				}
+			} catch (e) {
+				accessible = true; // cross-origin: can't inspect, assume fine
+			}
+			if ((!accessible || (empty && complete)) && retries < 1) {
+				retries++;
+				f.src = url;
+			}
+		};
+		f.addEventListener("load", () => {
+			if (splashMode === "load") hideGameLoader();
+			setTimeout(checkLoaded, 600);
+		});
+		if (splashMode === "load") {
+			onGameReady = null;
+		} else {
+			// lift the splash only once the game says it reached its game room
+			onGameReady = hideGameLoader;
+		}
+		view.appendChild(f);
+		f.src = url;
+		setTimeout(() => {
+			onGameReady = null;
+			hideGameLoader();
+		}, splashMode === "load" ? 20000 : 16000); // safety net if the game never signals
+	}
+
+	function launch(url, g) {
+		if (g && g.local) return launchLocal(url, g);
+		// loader is on top (z-index 10), so show it now and close the games
+		// page underneath without waiting on its animation
+		showGameLoader();
+		closeCurrent();
+
+		const a = document.getElementById("sj-address");
+		const f = document.getElementById("sj-form");
+		if (!a || !f) return;
+		a.value = url;
+		f.requestSubmit();
+
+		let hid = false;
+		const finish = () => {
+			if (hid) return;
+			hid = true;
+			hideGameLoader(); // enforces the minimum splash time itself
+			if (g && g.inject) injectInto(g.inject);
+		};
+		const attach = () => {
+			const fr = document.getElementById("sj-frame");
+			if (fr) fr.addEventListener("load", finish);
+			else setTimeout(attach, 100);
+		};
+		attach();
+		setTimeout(finish, 15000); // safety net
+	}
+
+	async function injectInto(src) {
+		let code;
+		try {
+			code = await fetch(src, { cache: "no-store" }).then((r) => r.text());
+		} catch (e) {
+			return;
+		}
+		const fr = document.getElementById("sj-frame");
+		if (!fr) return;
+		const inject = () => {
+			try {
+				const doc = fr.contentDocument;
+				if (doc && doc.documentElement) {
+					const s = doc.createElement("script");
+					s.textContent = code;
+					doc.documentElement.appendChild(s);
+				}
+			} catch (e) {}
+		};
+		// re-inject on every navigation (the page redirects between nodes);
+		// the script guards itself per-document so repeats are harmless
+		fr.addEventListener("load", () => {
+			setTimeout(inject, 1200);
+			setTimeout(inject, 3000);
+		});
+		setTimeout(inject, 1500);
+	}
+
+	function renderTiles(pageEl, list) {
+		const grid = pageEl.querySelector(".tile-grid");
+		if (!grid) return;
+		grid.innerHTML = "";
+		for (const item of list) {
+			const tile = document.createElement("button");
+			tile.className = "game-tile";
+			tile.title = item.name;
+
+			const thumb = document.createElement("div");
+			thumb.className = "game-thumb";
+			thumb.style.backgroundImage = `url("${item.img}")`;
+
+			const name = document.createElement("span");
+			name.className = "game-name";
+			name.textContent = item.name;
+
+			tile.appendChild(thumb);
+			tile.appendChild(name);
+			tile.addEventListener("click", () => launch(item.url, item));
+			grid.appendChild(tile);
+		}
+	}
+	renderTiles(pages.games, GAMES);
+	renderTiles(pages.apps, APPS);
+
+	navs.games.addEventListener("click", () => openPage("games"));
+	navs.apps.addEventListener("click", () => openPage("apps"));
+	navHome.addEventListener("click", () => closeCurrent());
+
+	for (const name of Object.keys(pages)) {
+		pages[name]
+			.querySelector("[data-close]")
+			.addEventListener("click", () => closeCurrent());
+	}
+
+	// sidebar peek: in proxy view the sidebar hides; the left edge slides it in
+	const sidebar = document.getElementById("sidebar");
+	const edge = document.getElementById("edge");
+	if (sidebar && edge) {
+		const peekIn = () => sidebar.classList.add("peek");
+		const peekOut = () => sidebar.classList.remove("peek");
+		edge.addEventListener("mouseenter", peekIn);
+		sidebar.addEventListener("mouseenter", peekIn);
+		sidebar.addEventListener("mouseleave", peekOut);
+	}
+})();
