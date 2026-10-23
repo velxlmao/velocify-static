@@ -29,7 +29,7 @@ window.startupReady = (async () => {
 	const expect = (value) => { if (!value) throw new Error("startup check failed"); };
 	const steps = [
 		["registering service worker", registerSW],
-		["testing all wisp connections", () => Promise.all(servers.map((server) => checkWisp(server, 4000)))],
+		["testing all wisp connections", () => Promise.all(servers.map((server) => checkWisp(server, 1500)))],
 		["checking secure connection", () => expect(window.isSecureContext)],
 		["checking service worker control", () => expect(navigator.serviceWorker.controller)],
 		["checking WebAssembly support", () => expect(typeof WebAssembly === "object")],
@@ -48,7 +48,7 @@ window.startupReady = (async () => {
 	let completed = 0;
 	app.inert = true;
 	const update = () => {
-		progress.value = Math.min(completed / total, (performance.now() - started) / 10000) * 100;
+		progress.value = Math.min(completed / total, (performance.now() - started) / 5000) * 100;
 	};
 	const interval = setInterval(update, 50);
 	try {
@@ -56,7 +56,7 @@ window.startupReady = (async () => {
 			status.textContent = steps[index][0] + " " + (index + 1) + "/" + total;
 			await steps[index][1]();
 			completed++;
-			const remaining = Math.max(0, 10000 - (performance.now() - started));
+			const remaining = Math.max(0, 5000 - (performance.now() - started));
 			await new Promise((resolve) => setTimeout(resolve, remaining / (total - index)));
 		}
 		progress.value = 100;
