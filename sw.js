@@ -61,10 +61,10 @@ async function handleRequest(event) {
 
 	if (url.pathname.startsWith(PROXY_PREFIX)) {
 		try {
-			await scramjet.loadConfig();
+			await withTimeout(scramjet.loadConfig(), 15000);
 			if (scramjet.route(event)) {
 				try {
-					const r = await scramjet.fetch(event);
+					const r = await withTimeout(scramjet.fetch(event), 30000);
 					if (!r || r.status === 0 || r.type === "opaque" || r.type === "opaqueredirect") return r;
 					const dest = event.request.destination;
 					const h = new Headers(r.headers);
