@@ -65,9 +65,9 @@ form.addEventListener("submit", async (event) => {
 		} catch (e) {}
 	}
 
-	if ((await connection.getTransport()) !== window.__VELO_BASE + "lib/l/index.mjs") {
-		await connection.setTransport(window.__VELO_BASE + "lib/l/index.mjs", [
-			{ websocket: wispUrl },
+	if ((await connection.getTransport()) !== window.__VELO_BASE + "lib/e/index.mjs") {
+		await connection.setTransport(window.__VELO_BASE + "lib/e/index.mjs", [
+			{ wisp: wispUrl },
 		]);
 	}
 
