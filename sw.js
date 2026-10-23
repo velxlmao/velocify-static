@@ -1,4 +1,4 @@
-importScripts("lib/s/scramjet.all.js?v=db2");
+importScripts("lib/s/scramjet.all.js?v=db3");
 
 self.addEventListener("install", () => self.skipWaiting());
 self.addEventListener("activate", (event) => event.waitUntil(self.clients.claim()));
@@ -9,8 +9,13 @@ const scramjetPromise = ensureScramjetDB().then(() => new ScramjetServiceWorker(
 const SCOPE = new URL("./", self.location).pathname;
 const PROXY_PREFIX = SCOPE + "view/";
 const SCRAMJET_STORES = ["config", "cookies", "redirectTrackers", "referrerPolicies", "publicSuffixList"];
-function withTimeout(p, ms) {
-	return Promise.race([p, new Promise((_, rej) => setTimeout(() => rej(new Error("timeout")), ms))]);
+async function withTimeout(p, ms) {
+	let timer;
+	try {
+		return await Promise.race([p, new Promise((_, reject) => { timer = setTimeout(() => reject(new Error("timeout")), ms); })]);
+	} finally {
+		clearTimeout(timer);
+	}
 }
 function openScramjetDB() {
 	return new Promise((resolve, reject) => {
