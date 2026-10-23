@@ -81,14 +81,14 @@ async function handleRequest(event) {
 				} catch (e) {
 					return new Response("VELO scramjet.fetch error: " + (e && (e.stack || e.message) || e), {
 						status: 502,
-						headers: { "Content-Type": "text/plain" },
+						headers: { "Content-Type": "text/plain", "Cross-Origin-Embedder-Policy": "require-corp", "Cross-Origin-Opener-Policy": "same-origin" },
 					});
 				}
 			}
 		} catch (e) {
 			return new Response("VELO route/loadConfig error: " + (e && (e.stack || e.message) || e), {
 				status: 502,
-				headers: { "Content-Type": "text/plain" },
+				headers: { "Content-Type": "text/plain", "Cross-Origin-Embedder-Policy": "require-corp", "Cross-Origin-Opener-Policy": "same-origin" },
 			});
 		}
 	}
