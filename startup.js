@@ -1,6 +1,6 @@
 "use strict";
 
-function checkWisp(endpoint) {
+function checkWisp(endpoint, timeout) {
 	return new Promise((resolve) => {
 		let socket;
 		const finish = () => {
@@ -11,7 +11,7 @@ function checkWisp(endpoint) {
 			}
 			resolve();
 		};
-		const timer = setTimeout(finish, 4000);
+		const timer = setTimeout(finish, timeout);
 		try {
 			socket = new WebSocket(endpoint);
 			socket.binaryType = "arraybuffer";
@@ -38,11 +38,12 @@ window.startupReady = (async () => {
 		status.textContent = "registering service worker 1/" + total;
 		await registerSW();
 		completed = 1;
-		status.textContent = "testing wisp connection, 2/" + total;
-		await Promise.all(servers.map(async (server) => {
-			await checkWisp(server);
+		const spacing = Math.max(0, 10000 - (performance.now() - started)) / servers.length;
+		await Promise.all(servers.map(async (server, index) => {
+			await new Promise((resolve) => setTimeout(resolve, index * spacing));
+			status.textContent = "testing wisp connection, " + (index + 2) + "/" + total;
+			await checkWisp(server, Math.max(1, Math.min(4000, 10000 - (performance.now() - started))));
 			completed++;
-			status.textContent = completed === total ? "ready, " + total + "/" + total : "testing wisp connection, " + (completed + 1) + "/" + total;
 		}));
 		await new Promise((resolve) => setTimeout(resolve, Math.max(0, 10000 - (performance.now() - started))));
 		progress.value = 100;
