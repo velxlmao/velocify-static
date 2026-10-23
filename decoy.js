@@ -17,22 +17,6 @@
 		}
 	}
 
-	// skip the decoy when launched as the installed app, on a shared ?u= link,
-	// or if turned off
-	const params = new URLSearchParams(location.search);
-	const asApp =
-		window.matchMedia("(display-mode: standalone)").matches ||
-		window.navigator.standalone === true ||
-		params.get("app") === "1" ||
-		!!params.get("u");
-
-	if (asApp || ls("velocify-decoy", "1") === "0") {
-		decoy.hidden = true;
-		app.classList.add("revealed");
-	} else {
-		page.focus();
-	}
-
 	// re-arm the decoy to a clean, blank Google Doc
 	function resetDecoy() {
 		const old = document.getElementById("reveal-letters");

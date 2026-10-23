@@ -138,21 +138,8 @@
 		},
 	};
 
-	const toggleDecoy = document.getElementById("toggle-decoy");
 	const bindPanic = document.getElementById("bind-panic");
 	const panicType = document.getElementById("panic-type");
-
-	// decoy toggle
-	function renderDecoy() {
-		const on = store.get("velocify-decoy", "1") !== "0";
-		toggleDecoy.setAttribute("aria-checked", on ? "true" : "false");
-	}
-	renderDecoy();
-	toggleDecoy.addEventListener("click", () => {
-		const on = toggleDecoy.getAttribute("aria-checked") === "true";
-		store.set("velocify-decoy", on ? "0" : "1");
-		renderDecoy();
-	});
 
 	// panic key bind
 	function keyLabel(k) {

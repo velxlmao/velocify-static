@@ -63,15 +63,15 @@
 		<script src="search.js" defer></script>
 		<script src="index.js?v=bae00f929a56" defer></script>
 		<script src="rain.js" defer></script>
-		<script src="settings.js" defer></script>
-		<script src="decoy.js" defer></script>
+		<script src="settings.js?v=47ed7e74a46b" defer></script>
+		<script src="decoy.js?v=e7689465ccd0" defer></script>
 		<script src="pwa.js" defer></script>
 		<script src="cloak.js" defer></script>
 		<script src="pages.js" defer></script>
 	</head>
 
 	<body>
-		<div id="app">
+		<div id="app" class="revealed">
 			<canvas id="rain"></canvas>
 
 		<nav id="sidebar">
@@ -131,11 +131,6 @@
 				<div class="setting">
 					<span class="setting-label">theme</span>
 					<div id="theme-swatches"></div>
-				</div>
-				<div class="setting row">
-					<span class="setting-label">decoy page</span>
-					<button id="toggle-decoy" class="toggle" role="switch"
-						aria-checked="true"><span class="knob"></span></button>
 				</div>
 				<div class="setting row">
 					<span class="setting-label">panic key</span>
@@ -252,7 +247,7 @@
 		</div>
 		</div>
 
-		<div id="decoy">
+		<div id="decoy" hidden>
 			<header class="g-top g-part">
 				<div class="g-left">
 					<a class="g-logo" title="Docs home">
