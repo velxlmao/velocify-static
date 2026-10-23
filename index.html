@@ -14,7 +14,7 @@
 		try { sessionStorage.setItem("velo-coi", String(n + 1)); } catch (e) {}
 		location.reload();
 	}
-	navigator.serviceWorker.register(base + "sw.js?v=d19106c15c4b", { scope: base })
+	navigator.serviceWorker.register(base + "sw.js?v=0b36f7259d15", { scope: base })
 		.then(function () { return navigator.serviceWorker.ready; })
 		.then(function () {
 			if (window.crossOriginIsolated) { try { sessionStorage.removeItem("velo-coi"); } catch (e) {} return; }
@@ -54,14 +54,14 @@
 		/>
 
 		<script src="config.js"></script>
-		<script src="lib/s/scramjet.all.js?v=2808dc4934ab"></script>
+		<script src="lib/s/scramjet.all.js?v=9ae1e79cda2d"></script>
 		<script src="lib/m/index.js"></script>
 
 		<link rel="stylesheet" href="index.css" />
 		<link rel="stylesheet" href="decoy.css" />
-		<script src="register-sw.js?v=f5569a0d54e5" defer></script>
+		<script src="register-sw.js?v=9cc7d109013b" defer></script>
 		<script src="search.js" defer></script>
-		<script src="index.js?v=8c912401d09a" defer></script>
+		<script src="index.js?v=bae00f929a56" defer></script>
 		<script src="rain.js" defer></script>
 		<script src="settings.js" defer></script>
 		<script src="decoy.js" defer></script>
