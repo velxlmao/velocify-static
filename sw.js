@@ -74,7 +74,11 @@ async function handleRequest(event) {
 			await scramjet.loadConfig();
 			if (scramjet.route(event)) {
 				try {
-					return await scramjet.fetch(event);
+					// Proxied responses must carry COEP/CORP too, or the
+					// crossOriginIsolated top page can't embed the /view/ frame
+					// (net::ERR_BLOCKED_BY_RESPONSE).
+					const r = await scramjet.fetch(event);
+					return withCOI(r, true, event.request.mode === "navigate");
 				} catch (e) {
 					return new Response("VELO scramjet.fetch error: " + (e && (e.stack || e.message) || e), {
 						status: 502,
