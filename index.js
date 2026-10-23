@@ -21,7 +21,7 @@ const scramjet = new ScramjetController({
 	},
 });
 
-scramjet.init();
+const scramjetReady = scramjet.init();
 
 const connection = new BareMux.BareMuxConnection(window.__VELO_BASE + "lib/m/worker.js");
 
@@ -34,6 +34,7 @@ form.addEventListener("submit", async (event) => {
 
 	try {
 		await registerSW();
+		await scramjetReady;
 		// Wait until the service worker is active and controlling the page,
 		// otherwise the first navigation loads before the proxy can intercept it.
 		await navigator.serviceWorker.ready;
@@ -65,8 +66,8 @@ form.addEventListener("submit", async (event) => {
 		} catch (e) {}
 	}
 
-	if ((await connection.getTransport()) !== window.__VELO_BASE + "lib/e/index.mjs") {
-		await connection.setTransport(window.__VELO_BASE + "lib/e/index.mjs", [
+	if ((await connection.getTransport()) !== window.__VELO_BASE + "lib/e/index.mjs?v=08b49336efc3") {
+		await connection.setTransport(window.__VELO_BASE + "lib/e/index.mjs?v=08b49336efc3", [
 			{ wisp: wispUrl },
 		]);
 	}
