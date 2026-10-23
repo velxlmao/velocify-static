@@ -74,11 +74,20 @@ async function handleRequest(event) {
 			await scramjet.loadConfig();
 			if (scramjet.route(event)) {
 				try {
-					// Proxied responses must carry COEP/CORP too, or the
-					// crossOriginIsolated top page can't embed the /view/ frame
-					// (net::ERR_BLOCKED_BY_RESPONSE).
+					// Proxied document/iframe/script/style/worker responses need
+					// COEP require-corp + COOP same-origin so the crossOriginIsolated
+					// top page can embed the /view/ frame (else ERR_BLOCKED_BY_RESPONSE).
+					// Match the reference: no CORP, drop permissions-policy.
 					const r = await scramjet.fetch(event);
-					return withCOI(r, true, event.request.mode === "navigate");
+					if (!r || r.status === 0 || r.type === "opaque" || r.type === "opaqueredirect") return r;
+					const dest = event.request.destination;
+					const h = new Headers(r.headers);
+					h.delete("permissions-policy");
+					if (["document", "iframe", "worker", "sharedworker", "style", "script", ""].indexOf(dest) !== -1) {
+						h.set("Cross-Origin-Embedder-Policy", "require-corp");
+						h.set("Cross-Origin-Opener-Policy", "same-origin");
+					}
+					return new Response(r.body, { status: r.status, statusText: r.statusText, headers: h });
 				} catch (e) {
 					return new Response("VELO scramjet.fetch error: " + (e && (e.stack || e.message) || e), {
 						status: 502,
