@@ -8,6 +8,11 @@
     <link rel="shortcut icon" href="TemplateData/favicon.ico">
     <link rel="stylesheet" href="TemplateData/style.css">
     <style>
+:root { --game-bg: #121E1E; }
+body { background: var(--game-bg); overflow: hidden; }
+#unity-container { inset: 0; display: grid; place-items: center; }
+#unity-canvas { width: min(100vw, 160vh); height: min(62.5vw, 100vh); }
+
       
 #loading-text {
   font-weight: bold;
@@ -85,7 +90,8 @@ var loadingText = document.querySelector("#loading-text");
       const cache = await caches.open("20mins-cache");
       const cachedResponse = await cache.match(cacheKey);
       if (cachedResponse) {
-        const blob = await cachedResponse.blob();
+        const cached = await cachedResponse.blob();
+        const blob = cacheKey.endsWith(".wasm") ? cached.slice(0, cached.size, "application/wasm") : cached;
         return URL.createObjectURL(blob);
       }
       const buffers = await Promise.all(
