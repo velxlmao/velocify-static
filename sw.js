@@ -1,10 +1,10 @@
-importScripts("lib/s/scramjet.all.js");
+importScripts("lib/s/scramjet.all.js?v=db2");
 
 self.addEventListener("install", () => self.skipWaiting());
 self.addEventListener("activate", (event) => event.waitUntil(self.clients.claim()));
 
 const { ScramjetServiceWorker } = $scramjetLoadWorker();
-const scramjet = new ScramjetServiceWorker();
+const scramjetPromise = ensureScramjetDB().then(() => new ScramjetServiceWorker());
 
 const SCOPE = new URL("./", self.location).pathname;
 const PROXY_PREFIX = SCOPE + "view/";
@@ -14,7 +14,7 @@ function withTimeout(p, ms) {
 }
 function openScramjetDB() {
 	return new Promise((resolve, reject) => {
-		const req = indexedDB.open("$scramjet", 1);
+		const req = indexedDB.open("$scramjet-velocify-static-v2", 1);
 		req.onupgradeneeded = () => {
 			const db = req.result;
 			for (const s of SCRAMJET_STORES) if (!db.objectStoreNames.contains(s)) db.createObjectStore(s);
@@ -26,7 +26,7 @@ function openScramjetDB() {
 }
 function deleteScramjetDB() {
 	return new Promise((resolve) => {
-		const req = indexedDB.deleteDatabase("$scramjet");
+		const req = indexedDB.deleteDatabase("$scramjet-velocify-static-v2");
 		req.onsuccess = req.onerror = req.onblocked = () => resolve();
 	});
 }
@@ -61,6 +61,7 @@ async function handleRequest(event) {
 
 	if (url.pathname.startsWith(PROXY_PREFIX)) {
 		try {
+			const scramjet = await scramjetPromise;
 			await withTimeout(scramjet.loadConfig(), 15000);
 			if (scramjet.route(event)) {
 				try {
@@ -95,7 +96,7 @@ async function handleRequest(event) {
 
 	const sameOrigin = url.origin === self.location.origin;
 	const isNav = event.request.mode === "navigate";
-	if (isNav && sameOrigin) await ensureScramjetDB();
+	if (isNav && sameOrigin) await scramjetPromise;
 
 	const resp = await fetch(event.request);
 	return withCOI(resp, sameOrigin, isNav);

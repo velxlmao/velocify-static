@@ -16,7 +16,7 @@ const scramjet = new ScramjetController({
 	prefix: window.__VELO_BASE + "view/",
 	files: {
 		wasm: window.__VELO_BASE + "lib/s/scramjet.wasm.wasm",
-		all: window.__VELO_BASE + "lib/s/scramjet.all.js",
+		all: window.__VELO_BASE + "lib/s/scramjet.all.js?v=24b4cf3430b5",
 		sync: window.__VELO_BASE + "lib/s/scramjet.sync.js",
 	},
 });
