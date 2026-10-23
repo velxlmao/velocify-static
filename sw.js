@@ -57,7 +57,7 @@ function withCOI(resp, sameOrigin, isNav) {
 	}
 	try {
 		const h = new Headers(resp.headers);
-		h.set("Cross-Origin-Embedder-Policy", "credentialless");
+		h.set("Cross-Origin-Embedder-Policy", "require-corp");
 		h.set("Cross-Origin-Resource-Policy", "cross-origin");
 		if (isNav) h.set("Cross-Origin-Opener-Policy", "same-origin");
 		return new Response(resp.body, { status: resp.status, statusText: resp.statusText, headers: h });
