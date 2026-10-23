@@ -61,6 +61,12 @@
 	// ---- catalogues ----
 	const GAMES = [
 		{
+			name: "20 Minutes Till Dawn",
+			url: "games/20-minutes/index.html",
+			img: "games/20-minutes.jpg",
+			local: true,
+		},
+		{
 			name: "Deltarune",
 			url: "https://d.ytsodacan.workers.dev/",
 			img: "games/deltarune.png",
