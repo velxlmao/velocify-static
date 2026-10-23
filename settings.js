@@ -43,7 +43,6 @@
 	}
 	apply(current);
 
-	// generic overlay (settings + download)
 	function makeOverlay(overlayEl, navBtn, closeBtn) {
 		let animating = false;
 		function open() {
@@ -96,16 +95,6 @@
 		document.getElementById("settings-close")
 	);
 	overlays.push({ el: overlay, ctl: settings });
-
-	const dlOverlay = document.getElementById("download-overlay");
-	if (dlOverlay) {
-		const dl = makeOverlay(
-			dlOverlay,
-			document.getElementById("nav-download"),
-			document.getElementById("download-close")
-		);
-		overlays.push({ el: dlOverlay, ctl: dl });
-	}
 
 	btnHome.addEventListener("click", () => {
 		closeAll(null);

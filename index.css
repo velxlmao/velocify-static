@@ -154,7 +154,6 @@ body {
 }
 
 #settings-overlay,
-#download-overlay,
 #links-overlay {
 	position: fixed;
 	inset: 0;
@@ -168,19 +167,16 @@ body {
 }
 
 #settings-overlay.open,
-#download-overlay.open,
 #links-overlay.open {
 	animation: overlayIn var(--dur) var(--ease) both;
 }
 
 #settings-overlay.closing,
-#download-overlay.closing,
 #links-overlay.closing {
 	animation: overlayOut 0.3s var(--ease) both;
 }
 
 #settings-panel,
-#download-panel,
 #links-panel {
 	position: relative;
 	width: min(1000px, 90vw);
@@ -193,19 +189,16 @@ body {
 }
 
 #settings-overlay.open #settings-panel,
-#download-overlay.open #download-panel,
 #links-overlay.open #links-panel {
 	animation: panelIn var(--dur) var(--ease) both;
 }
 
 #settings-overlay.closing #settings-panel,
-#download-overlay.closing #download-panel,
 #links-overlay.closing #links-panel {
 	animation: panelOut 0.3s var(--ease) both;
 }
 
 #settings-close,
-#download-close,
 #links-close {
 	position: absolute;
 	top: calc(var(--sp) * 1.3);
@@ -224,7 +217,6 @@ body {
 }
 
 #settings-close:hover,
-#download-close:hover,
 #links-close:hover {
 	color: var(--text);
 	background: var(--bg);
@@ -558,49 +550,6 @@ body {
 
 a {
 	color: var(--accent);
-}
-
-.dl-option {
-	display: flex;
-	align-items: center;
-	justify-content: space-between;
-	gap: var(--sp);
-	padding: calc(var(--sp) * 1.1) 0;
-	border-bottom: 1px solid var(--border);
-}
-
-.dl-text {
-	display: flex;
-	flex-direction: column;
-	gap: 3px;
-}
-
-.dl-title {
-	font-size: 0.95rem;
-	color: var(--text);
-}
-
-.dl-desc {
-	font-size: 0.78rem;
-	color: var(--muted);
-}
-
-.dl-btn {
-	flex: 0 0 auto;
-	padding: 9px 20px;
-	font: inherit;
-	font-size: 0.85rem;
-	font-weight: 600;
-	color: #fff;
-	background: var(--accent);
-	border: none;
-	border-radius: var(--radius);
-	cursor: pointer;
-	transition: filter var(--dur) var(--ease);
-}
-
-.dl-btn:hover {
-	filter: brightness(1.1);
 }
 
 /* links panel */
