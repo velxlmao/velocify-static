@@ -64,6 +64,7 @@
 			name: "20 Minutes Till Dawn",
 			url: "games/20-minutes/index.html",
 			img: "games/20-minutes.jpg",
+			imgPosition: "center top",
 			local: true,
 		},
 		{
@@ -254,6 +255,7 @@
 			const thumb = document.createElement("div");
 			thumb.className = "game-thumb";
 			thumb.style.backgroundImage = `url("${item.img}")`;
+			if (item.imgPosition) thumb.style.backgroundPosition = item.imgPosition;
 
 			const name = document.createElement("span");
 			name.className = "game-name";

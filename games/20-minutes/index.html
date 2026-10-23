@@ -91,7 +91,7 @@ var loadingText = document.querySelector("#loading-text");
       const buffers = await Promise.all(
         fileParts.map(part => fetchWithProgress(part))
       );
-      const mergedBlob = new Blob(buffers);
+      const mergedBlob = new Blob(buffers, { type: cacheKey.endsWith(".wasm") ? "application/wasm" : "application/octet-stream" });
       const response = new Response(mergedBlob);
       await cache.put(cacheKey, response);
       return URL.createObjectURL(mergedBlob);
