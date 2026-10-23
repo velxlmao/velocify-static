@@ -8,12 +8,6 @@ const scramjet = new ScramjetServiceWorker();
 
 const SCOPE = new URL("./", self.location).pathname;
 const PROXY_PREFIX = SCOPE + "view/";
-
-// Scramjet keeps its config in an IndexedDB ("$scramjet") whose object stores
-// are created only in the idb "upgrade" callback. A page/worker open race can
-// leave that DB at version 1 with NO stores, after which every scramjet
-// transaction throws "object store not found" and the proxy hangs. We heal it
-// right before serving the app document, with timeouts so it can't stall nav.
 const SCRAMJET_STORES = ["config", "cookies", "redirectTrackers", "referrerPolicies", "publicSuffixList"];
 function withTimeout(p, ms) {
 	return Promise.race([p, new Promise((_, rej) => setTimeout(() => rej(new Error("timeout")), ms))]);
@@ -47,10 +41,6 @@ async function ensureScramjetDB() {
 		}
 	} catch (e) {}
 }
-
-// Inject COOP/COEP so the page is crossOriginIsolated (libcurl needs
-// SharedArrayBuffer) and so same-origin subresources — including bare-mux's
-// SharedWorker — are isolation-compatible.
 function withCOI(resp, sameOrigin, isNav) {
 	if (!sameOrigin || !resp || resp.status === 0 || resp.type === "opaque" || resp.type === "opaqueredirect") {
 		return resp;
@@ -74,10 +64,6 @@ async function handleRequest(event) {
 			await scramjet.loadConfig();
 			if (scramjet.route(event)) {
 				try {
-					// Proxied document/iframe/script/style/worker responses need
-					// COEP require-corp + COOP same-origin so the crossOriginIsolated
-					// top page can embed the /view/ frame (else ERR_BLOCKED_BY_RESPONSE).
-					// Match the reference: no CORP, drop permissions-policy.
 					const r = await scramjet.fetch(event);
 					if (!r || r.status === 0 || r.type === "opaque" || r.type === "opaqueredirect") return r;
 					const dest = event.request.destination;
@@ -87,8 +73,6 @@ async function handleRequest(event) {
 						h.set("Cross-Origin-Embedder-Policy", "require-corp");
 						h.set("Cross-Origin-Opener-Policy", "same-origin");
 					}
-					// A navigated/framed proxy page is always rewritten HTML; make sure
-					// it's served as such so scripts run (else it renders as text/plain).
 					if ((dest === "document" || dest === "iframe" || dest === "") && event.request.mode === "navigate") {
 						const ct = h.get("content-type") || "";
 						if (!/html/i.test(ct)) h.set("content-type", "text/html; charset=utf-8");
@@ -111,7 +95,6 @@ async function handleRequest(event) {
 
 	const sameOrigin = url.origin === self.location.origin;
 	const isNav = event.request.mode === "navigate";
-	// Heal scramjet's IndexedDB before the page document loads and opens it.
 	if (isNav && sameOrigin) await ensureScramjetDB();
 
 	const resp = await fetch(event.request);

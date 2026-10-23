@@ -1,15 +1,12 @@
 (function () {
-	// Base dir of this deployment, e.g. /USER/REPO/BRANCH/
 	if (!window.__VELO_BASE) {
 		var p = location.pathname;
 		window.__VELO_BASE = p.slice(0, p.lastIndexOf("/") + 1);
 	}
 	if (typeof window.__VELO_POINTER === "undefined") window.__VELO_POINTER = null;
 
-	// === EDIT ME: your Wisp server(s). The first reachable one is used. ===
 	window.__VELO_WISP_LIST = [
 		"wss://velocify-wisp.realdashvr.workers.dev/wisp/"
-		// , "wss://velocify.onrender.com/ws/"   // optional Render fallback for full coverage
 	];
 
 	window.__VELO_WISP = window.__VELO_WISP_LIST[0];
