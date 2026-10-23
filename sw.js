@@ -72,8 +72,22 @@ async function handleRequest(event) {
 	if (url.pathname.startsWith(PROXY_PREFIX)) {
 		try {
 			await scramjet.loadConfig();
-			if (scramjet.route(event)) return scramjet.fetch(event);
-		} catch (e) {}
+			if (scramjet.route(event)) {
+				try {
+					return await scramjet.fetch(event);
+				} catch (e) {
+					return new Response("VELO scramjet.fetch error: " + (e && (e.stack || e.message) || e), {
+						status: 502,
+						headers: { "Content-Type": "text/plain" },
+					});
+				}
+			}
+		} catch (e) {
+			return new Response("VELO route/loadConfig error: " + (e && (e.stack || e.message) || e), {
+				status: 502,
+				headers: { "Content-Type": "text/plain" },
+			});
+		}
 	}
 
 	const sameOrigin = url.origin === self.location.origin;

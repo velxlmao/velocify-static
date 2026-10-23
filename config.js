@@ -8,7 +8,7 @@
 
 	// === EDIT ME: your Wisp server(s). The first reachable one is used. ===
 	window.__VELO_WISP_LIST = [
-		"wss://anura.pro/"
+		"wss://velocify-wisp.realdashvr.workers.dev/wisp/"
 		// , "wss://velocify.onrender.com/ws/"   // optional Render fallback for full coverage
 	];
 
