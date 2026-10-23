@@ -87,6 +87,12 @@ async function handleRequest(event) {
 						h.set("Cross-Origin-Embedder-Policy", "require-corp");
 						h.set("Cross-Origin-Opener-Policy", "same-origin");
 					}
+					// A navigated/framed proxy page is always rewritten HTML; make sure
+					// it's served as such so scripts run (else it renders as text/plain).
+					if ((dest === "document" || dest === "iframe" || dest === "") && event.request.mode === "navigate") {
+						const ct = h.get("content-type") || "";
+						if (!/html/i.test(ct)) h.set("content-type", "text/html; charset=utf-8");
+					}
 					return new Response(r.body, { status: r.status, statusText: r.statusText, headers: h });
 				} catch (e) {
 					return new Response("VELO scramjet.fetch error: " + (e && (e.stack || e.message) || e), {
