@@ -1,5 +1,5 @@
 "use strict";
-const stockSW = "./sw.js?v=34f19b180d7b";
+const stockSW = "./sw.js?v=34fdf1e63a75";
 
 /**
  * List of hostnames that are allowed to run serviceworkers on http://
@@ -22,4 +22,20 @@ async function registerSW() {
 	}
 
 	await navigator.serviceWorker.register(stockSW);
+	const expected = new URL(stockSW, location.href).href;
+	if (navigator.serviceWorker.controller?.scriptURL === expected) return;
+	await new Promise((resolve, reject) => {
+		const timer = setTimeout(() => finish(new Error("Service worker activation timed out.")), 15000);
+		function finish(error) {
+			clearTimeout(timer);
+			navigator.serviceWorker.removeEventListener("controllerchange", check);
+			if (error) reject(error);
+			else resolve();
+		}
+		function check() {
+			if (navigator.serviceWorker.controller?.scriptURL === expected) finish();
+		}
+		navigator.serviceWorker.addEventListener("controllerchange", check);
+		check();
+	});
 }

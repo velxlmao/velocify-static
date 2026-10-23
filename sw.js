@@ -1,4 +1,4 @@
-importScripts("lib/s/scramjet.all.js?v=9ae1e79cda2d");
+importScripts("lib/s/scramjet.all.js?v=810682760cd8");
 
 self.addEventListener("install", () => self.skipWaiting());
 self.addEventListener("activate", (event) => event.waitUntil(self.clients.claim()));
