@@ -14,7 +14,7 @@
 		try { sessionStorage.setItem("velo-coi", String(n + 1)); } catch (e) {}
 		location.reload();
 	}
-	navigator.serviceWorker.register(base + "sw.js?v=0b36f7259d15", { scope: base })
+	navigator.serviceWorker.register(base + "sw.js?v=34f19b180d7b", { scope: base })
 		.then(function () { return navigator.serviceWorker.ready; })
 		.then(function () {
 			if (window.crossOriginIsolated) { try { sessionStorage.removeItem("velo-coi"); } catch (e) {} return; }
@@ -59,7 +59,7 @@
 
 		<link rel="stylesheet" href="index.css" />
 		<link rel="stylesheet" href="decoy.css" />
-		<script src="register-sw.js?v=9cc7d109013b" defer></script>
+		<script src="register-sw.js?v=765923595a93" defer></script>
 		<script src="search.js" defer></script>
 		<script src="index.js?v=bae00f929a56" defer></script>
 		<script src="rain.js" defer></script>
