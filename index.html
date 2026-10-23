@@ -57,20 +57,30 @@
 		<script src="lib/s/scramjet.all.js?v=810682760cd8"></script>
 		<script src="lib/m/index.js"></script>
 
-		<link rel="stylesheet" href="index.css?v=f602507eb425" />
+		<link rel="stylesheet" href="index.css?v=0f61440a6c37" />
 		<link rel="stylesheet" href="decoy.css" />
 		<script src="register-sw.js?v=08a908a3c981" defer></script>
 		<script src="search.js" defer></script>
 		<script src="wisp.js?v=7ce6eb89292d" defer></script>
-		<script src="index.js?v=cb58ab1f3a5a" defer></script>
+		<script src="startup.js?v=8997e0f96ed5" defer></script>
+		<script src="index.js?v=5fbbc62b41d9" defer></script>
 		<script src="rain.js" defer></script>
 		<script src="settings.js?v=9c93c9e56f31" defer></script>
 		<script src="decoy.js?v=e7689465ccd0" defer></script>
 		<script src="cloak.js" defer></script>
-		<script src="pages.js?v=0bcf722474cb" defer></script>
+		<script src="pages.js?v=b3353d738f4e" defer></script>
 	</head>
 
 	<body>
+		<div id="startup">
+			<div class="gl-splash">
+				<div class="logo">velocify</div>
+				<div class="spinner" aria-hidden="true"></div>
+				<progress id="startup-progress" max="100" value="0" aria-label="startup progress"></progress>
+				<p id="startup-status" class="wisp-status" role="status" aria-live="polite">registering service worker 1/14</p>
+				<button id="startup-retry" hidden>retry</button>
+			</div>
+		</div>
 		<div id="app" class="revealed">
 			<canvas id="rain"></canvas>
 

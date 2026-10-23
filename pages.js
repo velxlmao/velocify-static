@@ -66,13 +66,6 @@
 			img: "games/deltarune.png",
 		},
 		{
-			name: "Roblox",
-			url: "/nowgg/",
-			img: "games/roblox.png",
-			local: true,
-			splash: "load",
-		},
-		{
 			name: "Idle Breakout",
 			url: "games/idle-breakout/game.html?nocheckorient=1",
 			img: "games/idlebreakout.png",

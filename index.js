@@ -56,6 +56,7 @@ form.addEventListener("submit", async (event) => {
 	loader.hidden = false;
 	connectionStatus("connecting to wisp server 1/" + window.__VELO_WISP_LIST.length);
 	try {
+		if (await window.startupReady === false) throw new Error("startup failed, reload to retry");
 		await registerSW();
 		await scramjetReady;
 		await navigator.serviceWorker.ready;

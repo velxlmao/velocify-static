@@ -918,3 +918,41 @@ body.proxy-mode #sidebar.peek {
 	color: var(--text);
 	text-align: center;
 }
+
+#startup {
+	position: fixed;
+	inset: 0;
+	z-index: 100;
+	display: grid;
+	place-items: center;
+	background: var(--bg);
+}
+
+#startup-progress {
+	width: 240px;
+	height: 6px;
+	border: 0;
+	border-radius: var(--radius);
+	overflow: hidden;
+	appearance: none;
+	background: var(--border);
+	accent-color: var(--accent);
+}
+
+#startup-progress::-webkit-progress-bar { background: var(--border); }
+#startup-progress::-webkit-progress-value { background: var(--accent); }
+#startup-progress::-moz-progress-bar { background: var(--accent); }
+
+#startup-retry {
+	padding: var(--sp);
+	font: inherit;
+	color: var(--text);
+	background: var(--surface);
+	border: 1px solid var(--border);
+	border-radius: var(--radius);
+	cursor: pointer;
+}
+
+#startup-retry:hover { border-color: var(--accent); }
+#startup-retry:focus-visible { outline: 2px solid var(--accent); }
+#startup-retry:disabled { opacity: 0.5; cursor: wait; }
