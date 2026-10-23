@@ -1,6 +1,0 @@
-<!doctype html><meta charset="utf-8"><pre id="out">starting</pre><script src="lib/m/index.js"></script><script type="module">
-const out=document.getElementById('out'); const log=x=>out.textContent+='\n'+x;
-window.addEventListener('error',e=>log(e.message));window.addEventListener('unhandledrejection',e=>log(String(e.reason)));
-log('isolated '+crossOriginIsolated);log('controller '+navigator.serviceWorker.controller?.scriptURL);
-try{const {default:Epoxy}=await import('./lib/e/index.mjs');log('imported');const e=new Epoxy({wisp:'wss://velocify-wisp.realdashvr.workers.dev/wisp/',wisp_v2:false});await e.init();log('epoxy ready');const r=await e.request(new URL('http://info.cern.ch/'),'GET',null,{},null);log('epoxy status '+r.status);log((await new Response(r.body).text()).slice(0,150));const c=new BareMux.BareClient('./lib/m/worker.js');log('bare start');const b=await c.fetch('http://info.cern.ch/');log('bare status '+b.status);log((await b.text()).slice(0,150));}catch(e){log(e.stack||String(e));}
-</script>
