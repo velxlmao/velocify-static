@@ -57,16 +57,17 @@
 		<script src="lib/s/scramjet.all.js?v=9ae1e79cda2d"></script>
 		<script src="lib/m/index.js"></script>
 
-		<link rel="stylesheet" href="index.css?v=65011d9c254e" />
+		<link rel="stylesheet" href="index.css?v=f602507eb425" />
 		<link rel="stylesheet" href="decoy.css" />
 		<script src="register-sw.js?v=765923595a93" defer></script>
 		<script src="search.js" defer></script>
-		<script src="index.js?v=bae00f929a56" defer></script>
+		<script src="wisp.js?v=90f59ba6efd1" defer></script>
+		<script src="index.js?v=fff7cd5b7968" defer></script>
 		<script src="rain.js" defer></script>
 		<script src="settings.js?v=9c93c9e56f31" defer></script>
 		<script src="decoy.js?v=e7689465ccd0" defer></script>
 		<script src="cloak.js" defer></script>
-		<script src="pages.js" defer></script>
+		<script src="pages.js?v=0bcf722474cb" defer></script>
 	</head>
 
 	<body>
@@ -194,6 +195,7 @@
 	<div class="gl-splash">
 		<div class="gl-wordmark">velocify</div>
 		<div class="gl-bar"><div class="gl-bar-fill"></div></div>
+		<p class="wisp-status" role="status" aria-live="polite"></p>
 	</div>
 </div>
 <div id="view" hidden>
@@ -201,6 +203,7 @@
 			<div id="loader" hidden>
 				<span class="logo">velocify</span>
 				<div class="spinner"></div>
+				<p class="wisp-status" role="status" aria-live="polite"></p>
 			</div>
 		</div>
 		</div>

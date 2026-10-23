@@ -26,58 +26,74 @@ const scramjetReady = scramjet.init();
 const connection = new BareMux.BareMuxConnection(window.__VELO_BASE + "lib/m/worker.js");
 
 let frame = null;
+let navigation = null;
+let connecting = false;
+const probeClient = new BareMux.BareClient(window.__VELO_BASE + "lib/m/worker.js");
+
+function connectionStatus(text) {
+	for (const el of document.querySelectorAll(".wisp-status")) el.textContent = text;
+}
+
+function finishNavigation(ok) {
+	loader.hidden = true;
+	connectionStatus("");
+	window.dispatchEvent(new CustomEvent("velo-proxy-finish", { detail: { ok } }));
+}
 
 form.addEventListener("submit", async (event) => {
 	event.preventDefault();
 	error.textContent = "";
 	errorCode.textContent = "";
 
+	navigation?.abort();
+	const controller = new AbortController();
+	navigation = controller;
+	connecting = true;
+	const url = search(address.value, searchEngine.value);
+	home.hidden = true;
+	view.hidden = false;
+	document.body.classList.add("proxy-mode");
+	loader.hidden = false;
+	connectionStatus("connecting to wisp server 1/" + window.__VELO_WISP_LIST.length);
 	try {
 		await registerSW();
 		await scramjetReady;
-		// Wait until the service worker is active and controlling the page,
-		// otherwise the first navigation loads before the proxy can intercept it.
 		await navigator.serviceWorker.ready;
+		const servers = [...window.__VELO_WISP_LIST];
+		if (window.__VELO_POINTER) {
+			try {
+				const response = await fetch(window.__VELO_POINTER, { cache: "no-store", signal: controller.signal });
+				const endpoint = (await response.text()).trim();
+				if (/^wss?:\/\//.test(endpoint) && !servers.includes(endpoint)) servers.push(endpoint);
+			} catch (err) { controller.signal.throwIfAborted(); }
+		}
+		await window.connectWisp(servers, async (wispUrl, signal) => {
+			signal.throwIfAborted();
+			await connection.setTransport(window.__VELO_BASE + "lib/e/index.mjs?v=08b49336efc3", [{ wisp: wispUrl }]);
+			signal.throwIfAborted();
+			const response = await probeClient.fetch(url, { method: "GET", redirect: "manual", signal });
+			await response.body?.cancel();
+			if (response.status >= 500 || [403, 407, 429].includes(response.status)) throw new Error("upstream unavailable");
+		}, (index, total) => connectionStatus("connecting to wisp server " + index + "/" + total), controller.signal);
+		controller.signal.throwIfAborted();
 	} catch (err) {
-		error.textContent = "Failed to register service worker.";
-		errorCode.textContent = err.toString();
-		throw err;
+		if (controller.signal.aborted) return;
+		error.textContent = err.message;
+		home.hidden = false;
+		view.hidden = true;
+		document.body.classList.remove("proxy-mode");
+		finishNavigation(false);
+		connecting = false;
+		return;
 	}
-
-	const url = search(address.value, searchEngine.value);
-
-	let wispUrl =
-		window.__VELO_WISP ||
-		(location.protocol === "https:" ? "wss" : "ws") +
-			"://" +
-			location.host +
-			"/ws/";
-
-	// mirrors: fetch the current backend from the control pointer at runtime,
-	// so they keep working after the backend is swapped out
-	if (window.__VELO_POINTER) {
-		try {
-			const b = (
-				await fetch(window.__VELO_POINTER, { cache: "no-store" }).then((r) =>
-					r.text()
-				)
-			).trim();
-			if (/^wss?:\/\//.test(b)) wispUrl = b;
-		} catch (e) {}
-	}
-
-	if ((await connection.getTransport()) !== window.__VELO_BASE + "lib/e/index.mjs?v=08b49336efc3") {
-		await connection.setTransport(window.__VELO_BASE + "lib/e/index.mjs?v=08b49336efc3", [
-			{ wisp: wispUrl },
-		]);
-	}
+	connecting = false;
 
 	if (!frame) {
 		frame = scramjet.createFrame();
 		frame.frame.id = "sj-frame";
 		view.appendChild(frame.frame);
 		frame.frame.addEventListener("load", () => {
-			loader.hidden = true;
+			if (!connecting && !navigation?.signal.aborted) finishNavigation(true);
 		});
 	}
 
@@ -93,7 +109,14 @@ form.addEventListener("submit", async (event) => {
 	frame.go(url);
 });
 
+function cancelNavigation() {
+	navigation?.abort();
+	finishNavigation(false);
+}
+
+document.getElementById("nav-home").addEventListener("click", cancelNavigation);
 homeBtn.addEventListener("click", () => {
+	cancelNavigation();
 	view.hidden = true;
 	home.hidden = false;
 	address.value = "";

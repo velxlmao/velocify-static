@@ -911,3 +911,10 @@ body.proxy-mode #sidebar.peek {
 		transform: translateX(320%);
 	}
 }
+
+.wisp-status {
+	min-height: 1em;
+	font-size: 0.85rem;
+	color: var(--text);
+	text-align: center;
+}

@@ -99,6 +99,7 @@
 	function showGameLoader() {
 		if (!gl) return;
 		glShownAt = Date.now();
+		for (const el of gl.querySelectorAll(".wisp-status")) el.textContent = "";
 		gl.hidden = false;
 		setTimeout(() => gl.classList.add("show"), 20);
 	}
@@ -206,22 +207,12 @@
 		const f = document.getElementById("sj-form");
 		if (!a || !f) return;
 		a.value = url;
+		const finish = (event) => {
+			hideGameLoader();
+			if (event.detail.ok && g && g.inject) injectInto(g.inject);
+		};
+		window.addEventListener("velo-proxy-finish", finish, { once: true });
 		f.requestSubmit();
-
-		let hid = false;
-		const finish = () => {
-			if (hid) return;
-			hid = true;
-			hideGameLoader(); // enforces the minimum splash time itself
-			if (g && g.inject) injectInto(g.inject);
-		};
-		const attach = () => {
-			const fr = document.getElementById("sj-frame");
-			if (fr) fr.addEventListener("load", finish);
-			else setTimeout(attach, 100);
-		};
-		attach();
-		setTimeout(finish, 15000); // safety net
 	}
 
 	async function injectInto(src) {
