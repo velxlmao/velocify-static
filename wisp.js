@@ -21,14 +21,22 @@ window.connectWisp = async function (servers, connect, progress, signal, timeout
 	for (let i = 0; i < servers.length; i++) {
 		signal.throwIfAborted();
 		progress(i + 1, servers.length);
+		const attempt = new AbortController();
 		let timer;
 		let abort;
 		try {
 			await Promise.race([
-				Promise.resolve().then(() => connect(servers[i], signal)),
+				Promise.resolve().then(() => connect(servers[i], attempt.signal)),
 				new Promise((_, reject) => {
-					timer = setTimeout(() => reject(new Error("wisp connection timed out")), timeout);
-					abort = () => reject(signal.reason);
+					timer = setTimeout(() => {
+						const error = new Error("wisp connection timed out");
+						attempt.abort(error);
+						reject(error);
+					}, timeout);
+					abort = () => {
+						attempt.abort(signal.reason);
+						reject(signal.reason);
+					};
 					signal.addEventListener("abort", abort, { once: true });
 				}),
 			]);
@@ -38,6 +46,7 @@ window.connectWisp = async function (servers, connect, progress, signal, timeout
 			signal.throwIfAborted();
 		} finally {
 			clearTimeout(timer);
+			attempt.abort();
 			signal.removeEventListener("abort", abort);
 		}
 	}

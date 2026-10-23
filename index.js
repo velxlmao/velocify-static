@@ -71,8 +71,9 @@ form.addEventListener("submit", async (event) => {
 			signal.throwIfAborted();
 			await connection.setTransport(window.__VELO_BASE + "lib/e/index.mjs?v=08b49336efc3", [{ wisp: wispUrl }]);
 			signal.throwIfAborted();
-			const response = await probeClient.fetch(url, { method: "GET", redirect: "manual", signal });
+			const response = await probeClient.fetch(url, { method: "GET", redirect: "follow", signal });
 			await response.body?.cancel();
+			signal.throwIfAborted();
 			if (response.status >= 500 || [403, 407, 429].includes(response.status)) throw new Error("upstream unavailable");
 		}, (index, total) => connectionStatus("connecting to wisp server " + index + "/" + total), controller.signal);
 		controller.signal.throwIfAborted();
