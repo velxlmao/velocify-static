@@ -724,7 +724,7 @@ a {
 	font-size: 0.9rem;
 }
 
-/* sidebar auto-hide in proxy view, peek on left edge */
+/* sidebar auto-hide in page view, peek on left edge */
 #sidebar {
 	transition: transform var(--dur) var(--ease);
 }

@@ -66,9 +66,9 @@ form.addEventListener("submit", async (event) => {
 		await navigator.serviceWorker.ready;
 		const servers = [...window.__VELO_SERVICES];
 
-		await window.connectService(servers, async (wispUrl, signal) => {
+		await window.connectService(servers, async (serviceUrl, signal) => {
 			signal.throwIfAborted();
-			await connection.setTransport(window.__VELO_BASE + "lib/e/index.mjs?v=64c6bc76c5b3", [{ wisp: wispUrl }]);
+			await connection.setTransport(window.__VELO_BASE + "lib/e/index.mjs?v=64c6bc76c5b3", [{ wisp: serviceUrl }]);
 			signal.throwIfAborted();
 			const response = await probeClient.fetch(url, { method: "GET", redirect: "follow", signal });
 			await response.body?.cancel();
@@ -97,7 +97,7 @@ form.addEventListener("submit", async (event) => {
 		});
 	}
 
-	// clear any self-hosted (local) game frame and restore the proxy frame
+	// clear any self-hosted (local) game frame and restore the page frame
 	const localFrame = document.getElementById("sj-local");
 	if (localFrame) localFrame.remove();
 	if (frame && frame.frame) frame.frame.style.display = "";
