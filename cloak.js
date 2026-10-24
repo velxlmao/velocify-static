@@ -32,20 +32,24 @@
 		}
 
 		done = true;
-		document.removeEventListener("pointerdown", tryCloak, true);
-		document.removeEventListener("keydown", tryCloak, true);
+		window.removeEventListener("workspace-cloak", tryCloak);
 
-		const url = location.origin + "/?app=1&nocloak=1";
-		w.document.write(
-			"<!doctype html><title>Untitled document - Google Docs</title>" +
-				'<link rel="icon" href="https://ssl.gstatic.com/docs/documents/images/kix-favicon7.ico">' +
-				"<style>html,body{margin:0;height:100%}iframe{border:0;width:100%;height:100%}</style>" +
-				'<iframe src="' + url + '" allow="fullscreen; clipboard-read; clipboard-write"></iframe>'
-		);
-		w.document.close();
+		const url = new URL(location.href);
+		url.searchParams.set("app", "1");
+		url.searchParams.set("nocloak", "1");
+		w.document.title = "Untitled document - Google Docs";
+		const icon = w.document.createElement("link");
+		icon.rel = "icon";
+		icon.href = new URL("document.ico", location.href).href;
+		const style = w.document.createElement("style");
+		style.textContent = "html,body{margin:0;height:100%}iframe{border:0;width:100%;height:100%}";
+		const frame = w.document.createElement("iframe");
+		frame.src = url.href;
+		frame.allow = "fullscreen; clipboard-read; clipboard-write; cross-origin-isolated";
+		w.document.head.append(icon, style);
+		w.document.body.append(frame);
 		location.replace("https://docs.google.com/document/u/0/");
 	}
 
-	document.addEventListener("pointerdown", tryCloak, true);
-	document.addEventListener("keydown", tryCloak, true);
+	window.addEventListener("workspace-cloak", tryCloak);
 })();

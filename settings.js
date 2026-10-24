@@ -199,6 +199,7 @@
 			const on = toggleCloak.getAttribute("aria-checked") === "true";
 			store.set("velocify-cloak", on ? "0" : "1");
 			render();
+			if (!on) window.dispatchEvent(new Event("workspace-cloak"));
 		});
 	}
 })();
