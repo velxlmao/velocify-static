@@ -60,6 +60,12 @@
 
 	// ---- catalogues ----
 	const GAMES = [
+		{ name: "Cuphead", url: "games/cuphead/index.html", img: "games/cuphead.jpg", imgPosition: "center top", local: true, download: true },
+		{ name: "A Dance of Fire and Ice", url: "games/adofai/index.html", img: "games/adofai.jpg", imgPosition: "center top", local: true, download: true },
+		{ name: "Flying Gorilla", url: "games/flying-gorilla/index.html", img: "games/flying-gorilla.png", imgPosition: "center top", local: true, download: true },
+		{ name: "Geometry Dash", url: "games/geometry-dash/index.html", img: "games/geometry-dash.jpg", imgPosition: "center top", local: true, download: true },
+		{ name: "Web Dashers", url: "games/web-dashers/index.html", img: "games/web-dashers.png", imgPosition: "center top", local: true, download: true },
+		{ name: "Buckshot Roulette", url: "games/buckshot-roulette/index.html", img: "games/buckshot-roulette.jpg", imgPosition: "center top", local: true, download: true },
 		{
 			name: "The Binding of Isaac: Repentance",
 			url: "https://tboi.online/",
@@ -68,6 +74,7 @@
 		},
 		{
 			name: "Brotato",
+			download: true,
 			url: "games/brotato/index.html",
 			img: "games/brotato.jpg",
 			imgPosition: "center top",
@@ -75,6 +82,7 @@
 		},
 		{
 			name: "20 Minutes Till Dawn",
+			download: true,
 			url: "games/20-minutes/index.html",
 			img: "games/20-minutes.jpg",
 			imgPosition: "center top",
@@ -137,6 +145,15 @@
 	// their game room, so we can lift the splash exactly then
 	let onGameReady = null;
 	window.addEventListener("message", (e) => {
+		const activeFrame = document.getElementById("sj-local");
+		if (e.origin !== location.origin || e.source !== activeFrame?.contentWindow) return;
+		if (e.data?.velocify === "game-download" && Number.isFinite(e.data.loaded) && Number.isFinite(e.data.total)) {
+			const total = Math.max(e.data.total, e.data.loaded);
+			const unit = total >= 1024 ** 3 ? "gb" : "mb";
+			const scale = unit === "gb" ? 1024 ** 3 : 1024 ** 2;
+			const text = "downloading content " + (e.data.loaded / scale).toFixed(1) + "/" + (total / scale).toFixed(1) + unit;
+			for (const el of gl.querySelectorAll(".wisp-status")) el.textContent = text;
+		}
 		if (e.data && e.data.velocify === "game-ready" && onGameReady) {
 			const cb = onGameReady;
 			onGameReady = null;
@@ -206,7 +223,7 @@
 		setTimeout(() => {
 			onGameReady = null;
 			hideGameLoader();
-		}, splashMode === "load" ? 20000 : 16000); // safety net if the game never signals
+		}, g?.download ? 20 * 60 * 1000 : splashMode === "load" ? 20000 : 16000); // safety net if the game never signals
 	}
 
 	function launch(url, g) {
