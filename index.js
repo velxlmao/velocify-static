@@ -113,6 +113,19 @@ form.addEventListener("submit", async (event) => {
 
 function cancelNavigation() {
 	navigation?.abort();
+	connecting = false;
+	frame = null;
+	for (const game of document.querySelectorAll("#sj-frame, #sj-local")) {
+		game.removeAttribute("id");
+		try {
+			const saved = game.contentWindow.flushGameSaves?.();
+			if (saved) {
+				Promise.race([saved, new Promise((resolve) => setTimeout(resolve, 2000))]).finally(() => game.remove());
+				continue;
+			}
+		} catch (error) {}
+		game.remove();
+	}
 	finishNavigation(false);
 }
 

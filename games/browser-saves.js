@@ -14,6 +14,7 @@ window.persistGameSaves = function (sync) {
 		if (document.hidden) flush();
 	});
 	window.addEventListener("pagehide", flush);
+	window.flushGameSaves = flush;
 	navigator.storage?.persist?.().catch(() => {});
 	return flush;
 };
