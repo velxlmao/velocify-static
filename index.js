@@ -14,10 +14,14 @@ const { ScramjetController } = $scramjetLoadController();
 
 const scramjet = new ScramjetController({
 	prefix: window.__VELO_BASE + "view/",
+	codec: {
+		encode: (url) => encodeURIComponent(btoa(Array.from(new TextEncoder().encode(url), byte => String.fromCharCode(byte)).join("")).split("").reverse().join("")),
+		decode: (url) => new TextDecoder().decode(Uint8Array.from(atob(decodeURIComponent(url).split("").reverse().join("")), ch => ch.charCodeAt(0))),
+	},
 	files: {
-		wasm: window.__VELO_BASE + "lib/s/scramjet.wasm.wasm",
-		all: window.__VELO_BASE + "lib/s/scramjet.all.js?v=810682760cd8",
-		sync: window.__VELO_BASE + "lib/s/scramjet.sync.js",
+		wasm: window.__VELO_BASE + "lib/s/reader.wasm",
+		all: window.__VELO_BASE + "lib/s/reader.js?v=810682760cd8",
+		sync: window.__VELO_BASE + "lib/s/clock.js",
 	},
 });
 
@@ -31,13 +35,13 @@ let connecting = false;
 const probeClient = new BareMux.BareClient(window.__VELO_BASE + "lib/m/worker.js");
 
 function connectionStatus(text) {
-	for (const el of document.querySelectorAll(".wisp-status")) el.textContent = text;
+	for (const el of document.querySelectorAll(".connection-status")) el.textContent = text;
 }
 
 function finishNavigation(ok) {
 	loader.hidden = true;
 	connectionStatus("");
-	window.dispatchEvent(new CustomEvent("velo-proxy-finish", { detail: { ok } }));
+	window.dispatchEvent(new CustomEvent("velo-view-finish", { detail: { ok } }));
 }
 
 form.addEventListener("submit", async (event) => {
@@ -52,38 +56,32 @@ form.addEventListener("submit", async (event) => {
 	const url = search(address.value, searchEngine.value);
 	home.hidden = true;
 	view.hidden = false;
-	document.body.classList.add("proxy-mode");
+	document.body.classList.add("view-mode");
 	loader.hidden = false;
-	connectionStatus("connecting to wisp server 1/" + window.__VELO_WISP_LIST.length);
+	connectionStatus("connecting to service 1/" + window.__VELO_SERVICES.length);
 	try {
 		if (await window.startupReady === false) throw new Error("startup failed, reload to retry");
 		await registerSW();
 		await scramjetReady;
 		await navigator.serviceWorker.ready;
-		const servers = [...window.__VELO_WISP_LIST];
-		if (window.__VELO_POINTER) {
-			try {
-				const response = await fetch(window.__VELO_POINTER, { cache: "no-store", signal: controller.signal });
-				const endpoint = (await response.text()).trim();
-				if (/^wss?:\/\//.test(endpoint) && !servers.includes(endpoint)) servers.push(endpoint);
-			} catch (err) { controller.signal.throwIfAborted(); }
-		}
-		await window.connectWisp(servers, async (wispUrl, signal) => {
+		const servers = [...window.__VELO_SERVICES];
+
+		await window.connectService(servers, async (wispUrl, signal) => {
 			signal.throwIfAborted();
-			await connection.setTransport(window.__VELO_BASE + "lib/e/index.mjs?v=08b49336efc3", [{ wisp: wispUrl }]);
+			await connection.setTransport(window.__VELO_BASE + "lib/e/index.mjs?v=64c6bc76c5b3", [{ wisp: wispUrl }]);
 			signal.throwIfAborted();
 			const response = await probeClient.fetch(url, { method: "GET", redirect: "follow", signal });
 			await response.body?.cancel();
 			signal.throwIfAborted();
 			if (response.status >= 500 || [403, 407, 429].includes(response.status)) throw new Error("upstream unavailable");
-		}, (index, total) => connectionStatus("connecting to wisp server " + index + "/" + total), controller.signal);
+		}, (index, total) => connectionStatus("connecting to service " + index + "/" + total), controller.signal);
 		controller.signal.throwIfAborted();
 	} catch (err) {
 		if (controller.signal.aborted) return;
 		error.textContent = err.message;
 		home.hidden = false;
 		view.hidden = true;
-		document.body.classList.remove("proxy-mode");
+		document.body.classList.remove("view-mode");
 		finishNavigation(false);
 		connecting = false;
 		return;
@@ -106,7 +104,7 @@ form.addEventListener("submit", async (event) => {
 
 	home.hidden = true;
 	view.hidden = false;
-	document.body.classList.add("proxy-mode");
+	document.body.classList.add("view-mode");
 	loader.hidden = false;
 	frame.go(url);
 });
@@ -135,7 +133,7 @@ homeBtn.addEventListener("click", () => {
 	view.hidden = true;
 	home.hidden = false;
 	address.value = "";
-	document.body.classList.remove("proxy-mode");
+	document.body.classList.remove("view-mode");
 	document.getElementById("sidebar").classList.remove("peek");
 });
 

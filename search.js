@@ -28,5 +28,6 @@ function search(input, template) {
 
 	// Attempts to convert the input to a fully qualified URL have failed
 	// Treat the input as a search query
+	if (template.startsWith("e:")) template = atob(template.slice(2).split("").reverse().join(""));
 	return template.replace("%s", encodeURIComponent(input));
 }

@@ -739,15 +739,15 @@ a {
 	display: none;
 }
 
-body.proxy-mode #edge {
+body.view-mode #edge {
 	display: block;
 }
 
-body.proxy-mode #sidebar {
+body.view-mode #sidebar {
 	transform: translateX(-100%);
 }
 
-body.proxy-mode #sidebar.peek {
+body.view-mode #sidebar.peek {
 	transform: translateX(0);
 	box-shadow: 0 0 24px rgba(0, 0, 0, 0.4);
 }
@@ -912,7 +912,7 @@ body.proxy-mode #sidebar.peek {
 	}
 }
 
-.wisp-status {
+.connection-status {
 	min-height: 1em;
 	font-size: 0.85rem;
 	color: var(--text);

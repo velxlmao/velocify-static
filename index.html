@@ -54,21 +54,22 @@
 		/>
 
 		<script src="config.js"></script>
-		<script src="lib/s/scramjet.all.js?v=810682760cd8"></script>
+		<script src="lib/s/reader.js?v=810682760cd8"></script>
 		<script src="lib/m/index.js"></script>
 
-		<link rel="stylesheet" href="index.css?v=0f61440a6c37" />
+		<link rel="stylesheet" href="index.css?v=50ea3dcff4fe" />
 		<link rel="stylesheet" href="decoy.css" />
 		<script src="register-sw.js?v=08a908a3c981" defer></script>
 		<script src="search.js" defer></script>
-		<script src="wisp.js?v=7ce6eb89292d" defer></script>
-		<script src="startup.js?v=c2d465f5c969" defer></script>
-		<script src="index.js?v=a2eef38d4dc3" defer></script>
+		<script type="module" src="channel.mjs"></script>
+		<script src="services.js?v=6aaff7d3ee6a" defer></script>
+		<script src="startup.js?v=d13f50c6837a" defer></script>
+		<script src="index.js?v=2d122795c2de" defer></script>
 		<script src="rain.js" defer></script>
-		<script src="settings.js?v=9c93c9e56f31" defer></script>
-		<script src="decoy.js?v=e7689465ccd0" defer></script>
+		<script src="settings.js?v=2dcbfd9e5537" defer></script>
+		<script src="decoy.js?v=e2b29f7924f6" defer></script>
 		<script src="cloak.js" defer></script>
-		<script src="pages.js?v=1a8956634cc8" defer></script>
+		<script src="pages.js?v=e81fa8f7cf9c" defer></script>
 	</head>
 
 	<body>
@@ -77,7 +78,7 @@
 				<div class="logo">velocify</div>
 				<div class="spinner" aria-hidden="true"></div>
 				<progress id="startup-progress" max="100" value="0" aria-label="startup progress"></progress>
-				<p id="startup-status" class="wisp-status" role="status" aria-live="polite">registering service worker 1/14</p>
+				<p id="startup-status" class="connection-status" role="status" aria-live="polite">registering service worker 1/14</p>
 				<button id="startup-retry" hidden>retry</button>
 			</div>
 		</div>
@@ -162,7 +163,7 @@
 			<form id="sj-form">
 				<input
 					id="sj-search-engine"
-					value="https://search.brave.com/search?q=%s"
+					value="e:zVSPx9DajJXYlN3Lt92YuUmdhJnYug2YyFWZz9yL6MHc0RHa"
 					type="hidden"
 				/>
 				<input
@@ -205,7 +206,7 @@
 	<div class="gl-splash">
 		<div class="gl-wordmark">velocify</div>
 		<div class="gl-bar"><div class="gl-bar-fill"></div></div>
-		<p class="wisp-status" role="status" aria-live="polite"></p>
+		<p class="connection-status" role="status" aria-live="polite"></p>
 	</div>
 </div>
 <div id="view" hidden>
@@ -213,7 +214,7 @@
 			<div id="loader" hidden>
 				<span class="logo">velocify</span>
 				<div class="spinner"></div>
-				<p class="wisp-status" role="status" aria-live="polite"></p>
+				<p class="connection-status" role="status" aria-live="polite"></p>
 			</div>
 		</div>
 		</div>

@@ -101,7 +101,7 @@ async function downloadPart(filename){
       const bytes=await response.arrayBuffer();
       if(bytes.byteLength!==window.gameDownloadSizes[filename])throw new Error("incomplete download");
       return bytes;
-    }catch(error){lastError=error;status.textContent="Retrying "+filename+"…";}
+    }catch(error){lastError=error;status.textContent="Retrying "+filename+"ï¿½";}
   }
   throw new Error("Could not load "+filename+": "+lastError.message+". Try again.");
 }

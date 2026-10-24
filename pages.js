@@ -122,7 +122,7 @@
 	function showGameLoader() {
 		if (!gl) return;
 		glShownAt = Date.now();
-		for (const el of gl.querySelectorAll(".wisp-status")) el.textContent = "";
+		for (const el of gl.querySelectorAll(".connection-status")) el.textContent = "";
 		gl.hidden = false;
 		setTimeout(() => gl.classList.add("show"), 20);
 	}
@@ -153,7 +153,7 @@
 			const total = Math.max(e.data.total, e.data.loaded);
 			const scale = 1024 ** 2;
 			const text = "downloading content " + (e.data.loaded / scale).toFixed(1) + "/" + (total / scale).toFixed(1) + "mb";
-			for (const el of gl.querySelectorAll(".wisp-status")) el.textContent = text;
+			for (const el of gl.querySelectorAll(".connection-status")) el.textContent = text;
 		}
 		if (e.data && ["game-ready", "game-error"].includes(e.data.velocify) && onGameReady) {
 			const cb = onGameReady;
@@ -170,7 +170,7 @@
 		const view = document.getElementById("view");
 		home.hidden = true;
 		view.hidden = false;
-		document.body.classList.add("proxy-mode");
+		document.body.classList.add("view-mode");
 		// hide any scramjet frame, drop any previous local frame
 		const sj = document.getElementById("sj-frame");
 		if (sj) sj.style.display = "none";
@@ -242,7 +242,7 @@
 			hideGameLoader();
 			if (event.detail.ok && g && g.inject) injectInto(g.inject);
 		};
-		window.addEventListener("velo-proxy-finish", finish, { once: true });
+		window.addEventListener("velo-view-finish", finish, { once: true });
 		f.requestSubmit();
 	}
 

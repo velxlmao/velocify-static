@@ -105,7 +105,7 @@
 			home.hidden = false;
 			const a = document.getElementById("sj-address");
 			if (a) a.value = "";
-			document.body.classList.remove("proxy-mode");
+			document.body.classList.remove("view-mode");
 			document.getElementById("sidebar").classList.remove("peek");
 		}
 	});
