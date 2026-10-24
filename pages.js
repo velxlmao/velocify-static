@@ -68,7 +68,9 @@
 		{ name: "Buckshot Roulette", url: "games/buckshot-roulette/index.html", img: "games/buckshot-roulette.jpg", imgPosition: "center top", local: true, download: true },
 		{
 			name: "The Binding of Isaac: Repentance",
-			url: "https://tboi.online/",
+			url: "https://velocify-isaac.realdashvr.workers.dev/",
+			local: true,
+			splash: "load",
 			img: "games/isaac.jpg",
 			imgPosition: "center top",
 		},
@@ -178,7 +180,7 @@
 		f.id = "sj-local";
 		// cloud games need autoplay/fullscreen/gamepad unlocked in the frame
 		f.allow =
-			"autoplay; fullscreen; picture-in-picture; gamepad; microphone; camera; display-capture; keyboard-lock";
+			"autoplay; fullscreen; picture-in-picture; gamepad; microphone; camera; display-capture; keyboard-lock; cross-origin-isolated";
 		f.setAttribute("allowfullscreen", "");
 		const splashMode = (g && g.splash) || "ready";
 		let retries = 0;
