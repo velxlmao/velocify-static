@@ -19,9 +19,9 @@ const scramjet = new ScramjetController({
 		decode: (url) => new TextDecoder().decode(Uint8Array.from(atob(decodeURIComponent(url).split("").reverse().join("")), ch => ch.charCodeAt(0))),
 	},
 	files: {
-		wasm: window.__VELO_BASE + "lib/s/scramjet.wasm.wasm",
-		all: window.__VELO_BASE + "lib/s/scramjet.all.js?v=746c2c116507",
-		sync: window.__VELO_BASE + "lib/s/scramjet.sync.js",
+		wasm: window.__VELO_BASE + "lib/s/reader.wasm",
+		all: window.__VELO_BASE + "lib/s/reader.js?v=746c2c116507",
+		sync: window.__VELO_BASE + "lib/s/clock.js",
 	},
 });
 
