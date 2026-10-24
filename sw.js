@@ -46,12 +46,17 @@ async function ensureScramjetDB() {
 		}
 	} catch (e) {}
 }
-function withCOI(resp, sameOrigin, isNav) {
+function withCOI(resp, sameOrigin, isNav, isHTML = false) {
 	if (!sameOrigin || !resp || resp.status === 0 || resp.type === "opaque" || resp.type === "opaqueredirect") {
 		return resp;
 	}
 	try {
 		const h = new Headers(resp.headers);
+		if (isHTML) {
+			h.set("Content-Type", "text/html; charset=utf-8");
+			h.delete("Content-Length");
+			h.delete("Content-Encoding");
+		}
 		h.set("Cross-Origin-Embedder-Policy", "require-corp");
 		h.set("Cross-Origin-Resource-Policy", "cross-origin");
 		if (isNav) h.set("Cross-Origin-Opener-Policy", "same-origin");
@@ -105,15 +110,12 @@ async function handleRequest(event) {
 	if (isNav && sameOrigin) await scramjetPromise;
 
 	if (isNav && sameOrigin && url.pathname === SCOPE + "index.svg") {
-  const page = await fetch(new URL("index.html", self.location));
-  const headers = new Headers(page.headers);
-  headers.set("Content-Type", "text/html; charset=utf-8");
-  headers.delete("Content-Length");
-  headers.delete("Content-Encoding");
-  return withCOI(new Response(page.body, {status: page.status, headers}), true, true);
- }
- const resp = await fetch(event.request);
-	return withCOI(resp, sameOrigin, isNav);
+		const page = await fetch(new URL("index.html", self.location));
+		return withCOI(page, true, true, true);
+	}
+	const resp = await fetch(event.request);
+	const isHTML = sameOrigin && isNav && url.pathname.startsWith(SCOPE) && /\.html?$/i.test(url.pathname);
+	return withCOI(resp, sameOrigin, isNav, isHTML);
 }
 
 self.addEventListener("fetch", (event) => {
