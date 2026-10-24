@@ -3,7 +3,7 @@
 <head>
 <script src="../browser-saves.js"></script>
 <script>window.gameDownloadSizes={"WebGL.data.part001":20971520,"WebGL.data.part002":20971520,"WebGL.data.part003":20971520,"WebGL.data.part004":20971520,"WebGL.data.part005":20971520,"WebGL.data.part006":20971520,"WebGL.data.part007":20971520,"WebGL.data.part008":20971520,"WebGL.data.part009":8410887,"WebGL.wasm.part001":20971520,"WebGL.wasm.part002":20971520,"WebGL.wasm.part003":20971520,"WebGL.wasm.part004":20971520,"WebGL.wasm.part005":20971520,"WebGL.wasm.part006":20971520,"WebGL.wasm.part007":15072224};</script>
-<script src="../download-progress.js"></script>
+<script src="../download-progress.js?v=2"></script>
 <base href="https://cdn.jsdelivr.net/gh/Nawsif/host@fbcced4b685d2aa636346573dd8887408ec081c1/ADOFAI/">
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
@@ -43,7 +43,7 @@ button{color:#ffcf65;background:#252525;border:1px solid #d6a538;border-radius:8
 <script>
 "use strict";
 // Build and StreamingAssets must be alongside this page.
-const BUILD="Build/", VERSION="tinkle-routing-6", PARTS={data:9,wasm:7};
+const BUILD="Build/", VERSION="velocify-routing-7", PARTS={data:9,wasm:7};
 const canvas=document.getElementById("unity-canvas"), loading=document.getElementById("loading"), status=document.getElementById("status"), progress=document.getElementById("tinkle-progress"), retry=document.getElementById("retry");
 const objectUrls=[];
 let unityInstance,failed=false,completed=0;
@@ -88,16 +88,28 @@ document.getElementById("play").addEventListener("click",()=>{
 });
 let lastProgress=0;
 function setProgress(value){lastProgress=Math.max(lastProgress,Math.min(100,value*100));progress.style.width=lastProgress+"%";document.getElementById("tinkle-percent").textContent=Math.floor(lastProgress)+"%";document.querySelector(".tinkle-track").setAttribute("aria-valuenow",Math.floor(lastProgress));}
-function fail(error){failed=true;loading.hidden=false;status.textContent=error instanceof Error?error.message:String(error);retry.hidden=false;document.querySelector(".tinkle-diamond").style.animationPlayState="paused";}
+function fail(error){parent.postMessage({velocify:"game-error"},location.origin);failed=true;loading.hidden=false;status.textContent=error instanceof Error?error.message:String(error);retry.hidden=false;document.querySelector(".tinkle-diamond").style.animationPlayState="paused";}
 retry.addEventListener("click",()=>location.reload());
+async function downloadPart(filename){
+  const primary=new URL(BUILD+filename+"?v="+VERSION,document.baseURI).href;
+  const backup="https://raw.githubusercontent.com/Nawsif/host/fbcced4b685d2aa636346573dd8887408ec081c1/ADOFAI/Build/"+filename;
+  let lastError;
+  for(const url of [primary,backup,primary]){
+    try{
+      const response=await fetch(url,{signal:AbortSignal.timeout(30000)});
+      if(!response.ok)throw new Error("HTTP "+response.status);
+      const bytes=await response.arrayBuffer();
+      if(bytes.byteLength!==window.gameDownloadSizes[filename])throw new Error("incomplete download");
+      return bytes;
+    }catch(error){lastError=error;status.textContent="Retrying "+filename+"…";}
+  }
+  throw new Error("Could not load "+filename+": "+lastError.message+". Try again.");
+}
 async function joinParts(name,count,type){
   const buffers=[];
   for(let part=1;part<=count;part++){
     const filename=name+".part"+String(part).padStart(3,"0");
-    const response=await fetch(BUILD+filename+"?v="+VERSION);
-    if(!response.ok)throw new Error("Could not load "+filename+" (HTTP "+response.status+"). Check the Build folder.");
-    const bytes=await response.arrayBuffer();
-    if(!bytes.byteLength)throw new Error(filename+" is empty.");
+    const bytes=await downloadPart(filename);
     buffers.push(bytes);completed++;
     if(!failed){setProgress(completed/16*.75);status.textContent="Loading game filesâ€¦ "+completed+" / 16";}
   }

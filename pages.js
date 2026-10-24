@@ -61,7 +61,7 @@
 	// ---- catalogues ----
 	const GAMES = [
 		{ name: "Cuphead", url: "games/cuphead/index.html", img: "games/cuphead.jpg", imgPosition: "center top", local: true, download: true },
-		{ name: "A Dance of Fire and Ice", url: "games/adofai/index.html", img: "games/adofai.jpg", imgPosition: "center top", local: true, download: true },
+		{ name: "A Dance of Fire and Ice", url: "games/adofai/index.html?v=2", img: "games/adofai.jpg", imgPosition: "center top", local: true, download: true },
 		{ name: "Flying Gorilla", url: "games/flying-gorilla/index.html", img: "games/flying-gorilla.png", imgPosition: "center top", local: true, download: true },
 		{ name: "Geometry Dash", url: "games/geometry-dash/index.html", img: "games/geometry-dash.jpg", imgPosition: "center top", local: true, download: true },
 		{ name: "Web Dashers", url: "games/web-dashers/index.html", img: "games/web-dashers.png", imgPosition: "center top", local: true, download: true },
@@ -155,7 +155,7 @@
 			const text = "downloading content " + (e.data.loaded / scale).toFixed(1) + "/" + (total / scale).toFixed(1) + "mb";
 			for (const el of gl.querySelectorAll(".wisp-status")) el.textContent = text;
 		}
-		if (e.data && e.data.velocify === "game-ready" && onGameReady) {
+		if (e.data && ["game-ready", "game-error"].includes(e.data.velocify) && onGameReady) {
 			const cb = onGameReady;
 			onGameReady = null;
 			cb();

@@ -21,12 +21,14 @@
 		const path = new URL(url, document.baseURI).pathname;
 		const name = path.split("/").pop();
 		if (!/\.(?:part\d+|part-\d+|data|wasm|pck|unityweb|bin)(?:\.part\d+)?$/i.test(name)) return null;
-		if (!files.has(path)) files.set(path, { loaded: 0, total: window.gameDownloadSizes?.[name] || 0 });
-		return files.get(path);
+		const key = window.gameDownloadSizes?.[name] ? name : path;
+		if (!files.has(key)) files.set(key, { loaded: 0, total: window.gameDownloadSizes?.[name] || 0 });
+		return files.get(key);
 	};
 	const nativeFetch = window.fetch.bind(window);
 	window.fetch = async (input, options) => {
 		const file = record(typeof input === "string" || input instanceof URL ? String(input) : input.url);
+		if (file) { file.loaded = 0; report(); }
 		const response = await nativeFetch(input, options);
 		if (!file || !response.ok || !response.body) return response;
 		if (!file.total && !response.headers.has("content-encoding")) file.total = Number(response.headers.get("content-length")) || 0;
