@@ -109,8 +109,8 @@
 	];
 	const APPS = [
 		{
-			name: "Blooket Bot",
-			url: "https://blooketbot.schoolcheats.net/",
+			name: "Blooket Modded",
+			url: "https://play.blooket.com/",
 			img: "apps/blooketbot.png",
 		},
 		{
