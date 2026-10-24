@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="en-us">
   <head>
+    <script src="../browser-saves.js"></script>
     <base href="https://cdn.jsdelivr.net/gh/web-ports/20-minutes@e82366ecffd3ed46f804da050d02a44422986204/">
     <meta charset="utf-8">
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
@@ -127,10 +128,11 @@ var loadingText = document.querySelector("#loading-text");
 
       var buildUrl = "Build";
       var loaderUrl = buildUrl + "/20minutes.loader.js";
+      const saveFramework = new URL("framework.js", location.href).href;
       var config = {
         arguments: [],
         dataUrl: dataUrl,
-        frameworkUrl: buildUrl + "/20minutes.framework.js",
+        frameworkUrl: saveFramework,
         codeUrl: wasmUrl,
         streamingAssetsUrl: "StreamingAssets",
         companyName: "Flanne",
