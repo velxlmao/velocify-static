@@ -149,9 +149,8 @@
 		if (e.origin !== location.origin || e.source !== activeFrame?.contentWindow) return;
 		if (e.data?.velocify === "game-download" && Number.isFinite(e.data.loaded) && Number.isFinite(e.data.total)) {
 			const total = Math.max(e.data.total, e.data.loaded);
-			const unit = total >= 1024 ** 3 ? "gb" : "mb";
-			const scale = unit === "gb" ? 1024 ** 3 : 1024 ** 2;
-			const text = "downloading content " + (e.data.loaded / scale).toFixed(1) + "/" + (total / scale).toFixed(1) + unit;
+			const scale = 1024 ** 2;
+			const text = "downloading content " + (e.data.loaded / scale).toFixed(1) + "/" + (total / scale).toFixed(1) + "mb";
 			for (const el of gl.querySelectorAll(".wisp-status")) el.textContent = text;
 		}
 		if (e.data && e.data.velocify === "game-ready" && onGameReady) {
