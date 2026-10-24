@@ -20,7 +20,7 @@ const scramjet = new ScramjetController({
 	},
 	files: {
 		wasm: window.__VELO_BASE + "lib/s/reader.wasm",
-		all: window.__VELO_BASE + "lib/s/reader.js?v=746c2c116507",
+		all: window.__VELO_BASE + "lib/s/reader.js?v=bf0df93aa3b1",
 		sync: window.__VELO_BASE + "lib/s/clock.js",
 	},
 });

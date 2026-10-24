@@ -1,4 +1,4 @@
-importScripts("lib/s/reader.js?v=746c2c116507");
+importScripts("lib/s/reader.js?v=bf0df93aa3b1");
 
 self.addEventListener("install", () => self.skipWaiting());
 self.addEventListener("activate", (event) => event.waitUntil(self.clients.claim()));

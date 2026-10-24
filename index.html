@@ -14,7 +14,7 @@
 		try { sessionStorage.setItem("velo-coi", String(n + 1)); } catch (e) {}
 		location.reload();
 	}
-	navigator.serviceWorker.register(base + "sw.js?v=4bd850f3f19c", { scope: base })
+	navigator.serviceWorker.register(base + "sw.js?v=734df15f22c0", { scope: base })
 		.then(function () { return navigator.serviceWorker.ready; })
 		.then(function () {
 			if (window.crossOriginIsolated) { try { sessionStorage.removeItem("velo-coi"); } catch (e) {} return; }
@@ -49,16 +49,16 @@
 		<link href="fonts/body.css" rel="stylesheet" />
 
 		<script src="config.js"></script>
-		<script src="lib/s/reader.js?v=746c2c116507"></script>
+		<script src="lib/s/reader.js?v=bf0df93aa3b1"></script>
 		<script src="lib/m/index.js"></script>
 
 		<link rel="stylesheet" href="index.css?v=48febf5e0e71" />
 		<link rel="stylesheet" href="decoy.css" />
-		<script src="register-sw.js?v=7795a22153a4" defer></script>
+		<script src="register-sw.js?v=7595f0dc7089" defer></script>
 		<script src="search.js" defer></script>
 		<script src="services.js?v=6aaff7d3ee6a" defer></script>
 		<script src="startup.js?v=d13f50c6837a" defer></script>
-		<script src="index.js?v=036d506e03bd" defer></script>
+		<script src="index.js?v=c3570a0118bc" defer></script>
 		<script src="rain.js" defer></script>
 		<script src="settings.js?v=2dcbfd9e5537" defer></script>
 		<script src="decoy.js?v=e2b29f7924f6" defer></script>

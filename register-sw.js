@@ -1,5 +1,5 @@
 "use strict";
-const stockSW = "./sw.js?v=4bd850f3f19c";
+const stockSW = "./sw.js?v=734df15f22c0";
 
 /**
  * List of hostnames that are allowed to run serviceworkers on http://
