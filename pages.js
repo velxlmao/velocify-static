@@ -60,6 +60,8 @@
 
 	// ---- catalogues ----
 	const GAMES = [
+		{ name: "Blackjack", url: "games/casino/index.html?game=blackjack", img: "games/casino/blackjack.svg", local: true },
+		{ name: "Roulette", url: "games/casino/index.html?game=roulette", img: "games/casino/roulette.svg", local: true },
 		{ name: "Cuphead", url: "games/cuphead/index.html", img: "games/cuphead.jpg", imgPosition: "center top", local: true, download: true },
 		{ name: "A Dance of Fire and Ice", url: "games/adofai/index.html", img: "games/adofai.jpg", imgPosition: "center top", local: true, download: true },
 		{ name: "Flying Gorilla", url: "games/flying-gorilla/index.html", img: "games/flying-gorilla.png", imgPosition: "center top", local: true, download: true },
@@ -298,6 +300,10 @@
 	}
 	renderTiles(pages.games, GAMES);
 	renderTiles(pages.apps, APPS);
+	const tableInvite = new URLSearchParams(location.search);
+	if (["blackjack", "roulette"].includes(tableInvite.get("table")) && /^[A-Z2-9]{6}$/.test(tableInvite.get("room") || "")) {
+		launchLocal("games/casino/index.html?game=" + tableInvite.get("table") + "&room=" + tableInvite.get("room"), { local: true });
+	}
 
 	navs.games.addEventListener("click", () => openPage("games"));
 	navs.apps.addEventListener("click", () => openPage("apps"));
