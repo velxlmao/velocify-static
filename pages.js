@@ -24,6 +24,7 @@
 			el.removeEventListener("animationend", done);
 			el.classList.remove("closing");
 			el.hidden = true;
+			el.querySelector(".tile-grid")?.replaceChildren();
 			animating = false;
 			if (then) then();
 		};
@@ -38,6 +39,7 @@
 		}
 		const show = () => {
 			const el = pages[name];
+			renderTiles(el, name === "games" ? GAMES : APPS);
 			el.hidden = false;
 			el.classList.remove("closing");
 			el.classList.add("open");
@@ -277,7 +279,7 @@
 	function renderTiles(pageEl, list) {
 		const grid = pageEl.querySelector(".tile-grid");
 		if (!grid) return;
-		grid.innerHTML = "";
+		grid.replaceChildren();
 		for (const item of list) {
 			const tile = document.createElement("button");
 			tile.className = "game-tile";
@@ -298,8 +300,7 @@
 			grid.appendChild(tile);
 		}
 	}
-	renderTiles(pages.games, GAMES);
-	renderTiles(pages.apps, APPS);
+
 
 	navs.games.addEventListener("click", () => openPage("games"));
 	navs.apps.addEventListener("click", () => openPage("apps"));

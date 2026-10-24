@@ -73,6 +73,7 @@ async function handleRequest(event) {
 					const r = await withTimeout(scramjet.fetch(event), 30000);
 					if (!r || r.status === 0 || r.type === "opaque" || r.type === "opaqueredirect") return r;
 					const dest = event.request.destination;
+					if (r.status >= 500 && event.request.mode === "navigate") return new Response("Page unavailable. Go back and try again.", { status: r.status, headers: { "Content-Type": "text/plain", "Cross-Origin-Embedder-Policy": "require-corp", "Cross-Origin-Opener-Policy": "same-origin" } });
 					const h = new Headers(r.headers);
 					h.delete("permissions-policy");
 					if (["document", "iframe", "worker", "sharedworker", "style", "script", ""].indexOf(dest) !== -1) {
@@ -85,14 +86,14 @@ async function handleRequest(event) {
 					}
 					return new Response(r.body, { status: r.status, statusText: r.statusText, headers: h });
 				} catch (e) {
-					return new Response("VELO scramjet.fetch error: " + (e && (e.stack || e.message) || e), {
+					return new Response("Page unavailable. Go back and try again.", {
 						status: 502,
 						headers: { "Content-Type": "text/plain", "Cross-Origin-Embedder-Policy": "require-corp", "Cross-Origin-Opener-Policy": "same-origin" },
 					});
 				}
 			}
 		} catch (e) {
-			return new Response("VELO route/loadConfig error: " + (e && (e.stack || e.message) || e), {
+			return new Response("Page unavailable. Go back and try again.", {
 				status: 502,
 				headers: { "Content-Type": "text/plain", "Cross-Origin-Embedder-Policy": "require-corp", "Cross-Origin-Opener-Policy": "same-origin" },
 			});

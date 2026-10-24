@@ -78,7 +78,7 @@ form.addEventListener("submit", async (event) => {
 		controller.signal.throwIfAborted();
 	} catch (err) {
 		if (controller.signal.aborted) return;
-		error.textContent = err.message;
+		error.textContent = "Could not open this page. Try again.";
 		home.hidden = false;
 		view.hidden = true;
 		document.body.classList.remove("view-mode");
@@ -137,9 +137,10 @@ homeBtn.addEventListener("click", () => {
 	document.getElementById("sidebar").classList.remove("peek");
 });
 
-// a shared link like https://<server>/?u=https://example.com opens straight away
-const deepLink = new URLSearchParams(location.search).get("u");
-if (deepLink) {
-	address.value = deepLink;
-	form.requestSubmit();
+if (window.__workspaceStart) {
+ try {
+  address.value = new TextDecoder().decode(Uint8Array.from(atob(decodeURIComponent(window.__workspaceStart).split("").reverse().join("")), ch => ch.charCodeAt(0)));
+  if (address.value) form.requestSubmit();
+ } catch { error.textContent = "This link could not be opened."; }
+ window.__workspaceStart = null;
 }
