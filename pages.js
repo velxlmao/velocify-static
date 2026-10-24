@@ -3,10 +3,12 @@
 	const pages = {
 		games: document.getElementById("games-page"),
 		apps: document.getElementById("apps-page"),
+		ai: document.getElementById("ai-page"),
 	};
 	const navs = {
 		games: document.getElementById("nav-games"),
 		apps: document.getElementById("nav-apps"),
+		ai: document.getElementById("nav-ai"),
 	};
 	const home = document.getElementById("home");
 	const navHome = document.getElementById("nav-home");
@@ -39,12 +41,13 @@
 		}
 		const show = () => {
 			const el = pages[name];
-			renderTiles(el, name === "games" ? GAMES : APPS);
+			if (name !== "ai") renderTiles(el, name === "games" ? GAMES : APPS);
 			el.hidden = false;
 			el.classList.remove("closing");
 			el.classList.add("open");
 			navs[name].classList.add("active");
 			current = name;
+			if (name === "ai") window.dispatchEvent(new Event("velx-ai-open"));
 		};
 		if (current) hide(pages[current], navs[current], show);
 		else show();
@@ -304,6 +307,7 @@
 
 	navs.games.addEventListener("click", () => openPage("games"));
 	navs.apps.addEventListener("click", () => openPage("apps"));
+	navs.ai.addEventListener("click", () => openPage("ai"));
 	navHome.addEventListener("click", () => closeCurrent());
 
 	for (const name of Object.keys(pages)) {
