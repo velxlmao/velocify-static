@@ -186,20 +186,11 @@
 		});
 	}
 
-	// about:blank cloaking (off by default)
+	store.set("velocify-cloak", "0");
 	const toggleCloak = document.getElementById("toggle-cloak");
 	if (toggleCloak) {
-		const render = () =>
-			toggleCloak.setAttribute(
-				"aria-checked",
-				store.get("velocify-cloak", "0") === "1" ? "true" : "false"
-			);
-		render();
-		toggleCloak.addEventListener("click", () => {
-			const on = toggleCloak.getAttribute("aria-checked") === "true";
-			store.set("velocify-cloak", on ? "0" : "1");
-			render();
-			if (!on) window.dispatchEvent(new Event("workspace-cloak"));
-		});
+		toggleCloak.setAttribute("aria-checked", "false");
+		toggleCloak.disabled = true;
+		toggleCloak.title = "disabled";
 	}
 })();
