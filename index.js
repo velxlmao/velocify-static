@@ -63,7 +63,6 @@ form.addEventListener("submit", async (event) => {
 		if (await window.startupReady === false) throw new Error("startup failed, reload to retry");
 		await registerSW();
 		await scramjetReady;
-		await navigator.serviceWorker.ready;
 		const servers = [...window.__VELO_SERVICES];
 
 		await window.connectService(servers, async (serviceUrl, signal) => {

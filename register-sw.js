@@ -1,5 +1,5 @@
 "use strict";
-const stockSW = "./sw.js?v=734df15f22c0";
+const stockSW = "./sw.js?v=903fcbb2a904";
 
 /**
  * List of hostnames that are allowed to run serviceworkers on http://
@@ -21,7 +21,13 @@ async function registerSW() {
 		throw new Error("Your browser doesn't support service workers.");
 	}
 
-	await navigator.serviceWorker.register(stockSW);
+	let registrationTimer;
+	try {
+		await Promise.race([
+			navigator.serviceWorker.register(stockSW, { updateViaCache: "none" }),
+			new Promise((resolve, reject) => { registrationTimer = setTimeout(() => reject(new Error("Startup service did not respond. Retry.")), 20000); }),
+		]);
+	} finally { clearTimeout(registrationTimer); }
 	const expected = new URL(stockSW, location.href).href;
 	if (navigator.serviceWorker.controller?.scriptURL === expected) return;
 	await new Promise((resolve, reject) => {

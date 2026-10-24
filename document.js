@@ -6,6 +6,7 @@
  const encoded = url.searchParams.get("open");
  window.__workspaceStart = encoded || (legacy ? encodeURIComponent(btoa(Array.from(new TextEncoder().encode(legacy), byte => String.fromCharCode(byte)).join("")).split("").reverse().join("")) : null);
  try {
+  sessionStorage.removeItem("document-svg:" + url.pathname);
   if (window.__workspaceStart) sessionStorage.setItem(window.__workspaceKey, window.__workspaceStart);
   else window.__workspaceStart = sessionStorage.getItem(window.__workspaceKey);
  } catch {}

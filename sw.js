@@ -6,6 +6,10 @@ self.addEventListener("activate", (event) => event.waitUntil(self.clients.claim(
 const { ScramjetServiceWorker } = $scramjetLoadWorker();
 const scramjetPromise = ensureScramjetDB().then(() => new ScramjetServiceWorker());
 
+self.addEventListener("message", (event) => {
+	if (event.data?.document === "svg-check" && event.ports?.[0]) event.ports[0].postMessage({ document: "svg-ready" });
+});
+
 const SCOPE = new URL("./", self.location).pathname;
 const PROXY_PREFIX = SCOPE + "view/";
 const SCRAMJET_STORES = ["config", "cookies", "redirectTrackers", "referrerPolicies", "publicSuffixList"];
@@ -54,6 +58,7 @@ function withCOI(resp, sameOrigin, isNav, isHTML = false) {
 		const h = new Headers(resp.headers);
 		if (isHTML) {
 			h.set("Content-Type", "text/html; charset=utf-8");
+			h.set("Cache-Control", "no-store");
 			h.delete("Content-Length");
 			h.delete("Content-Encoding");
 		}
@@ -110,7 +115,7 @@ async function handleRequest(event) {
 	if (isNav && sameOrigin) await scramjetPromise;
 
 	if (isNav && sameOrigin && url.pathname === SCOPE + "index.svg") {
-		const page = await fetch(new URL("index.html", self.location));
+		const page = await fetch(new URL("index.html", self.location), { cache: "no-store" });
 		return withCOI(page, true, true, true);
 	}
 	const resp = await fetch(event.request);
