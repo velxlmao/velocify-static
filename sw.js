@@ -104,7 +104,15 @@ async function handleRequest(event) {
 	const isNav = event.request.mode === "navigate";
 	if (isNav && sameOrigin) await scramjetPromise;
 
-	const resp = await fetch(event.request);
+	if (isNav && sameOrigin && url.pathname === SCOPE + "index.svg") {
+  const page = await fetch(new URL("index.html", self.location));
+  const headers = new Headers(page.headers);
+  headers.set("Content-Type", "text/html; charset=utf-8");
+  headers.delete("Content-Length");
+  headers.delete("Content-Encoding");
+  return withCOI(new Response(page.body, {status: page.status, headers}), true, true);
+ }
+ const resp = await fetch(event.request);
 	return withCOI(resp, sameOrigin, isNav);
 }
 
