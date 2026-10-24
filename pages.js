@@ -110,7 +110,7 @@
 	const APPS = [
 		{
 			name: "Blooket Bot",
-			url: "https://blooketbot.neocities.org/",
+			url: "https://blooketbot.schoolcheats.net/",
 			img: "apps/blooketbot.png",
 		},
 		{
