@@ -107,9 +107,11 @@ form.addEventListener("submit", async (event) => {
 	document.body.classList.add("view-mode");
 	loader.hidden = false;
 	frame.go(url);
+	try { sessionStorage.removeItem(window.__workspaceKey); } catch {}
 });
 
 function cancelNavigation() {
+	try { sessionStorage.removeItem(window.__workspaceKey); } catch {}
 	navigation?.abort();
 	connecting = false;
 	frame = null;
