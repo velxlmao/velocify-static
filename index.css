@@ -508,6 +508,47 @@ body {
 	background: var(--bg);
 }
 
+/* floating "inject mod" button, overlaid on the proxied page (top-left) */
+#mod-inject-btn {
+	position: fixed;
+	top: 46px;
+	left: 12px;
+	z-index: 6;
+	display: inline-flex;
+	align-items: center;
+	gap: 6px;
+	padding: 7px 14px;
+	font: 600 13px/1 Montserrat, system-ui, sans-serif;
+	color: #fff;
+	background: var(--accent);
+	border: none;
+	border-radius: 999px;
+	cursor: pointer;
+	box-shadow: 0 4px 14px rgba(0, 0, 0, 0.35);
+	opacity: 0.92;
+	transition: transform 0.15s var(--ease), opacity 0.15s var(--ease),
+		filter 0.15s var(--ease);
+}
+
+#mod-inject-btn:hover {
+	opacity: 1;
+	transform: translateY(-1px);
+	filter: brightness(1.08);
+}
+
+#mod-inject-btn:active {
+	transform: translateY(1px);
+}
+
+#mod-inject-btn[disabled] {
+	cursor: default;
+	opacity: 0.8;
+}
+
+#mod-inject-btn[hidden] {
+	display: none;
+}
+
 #sj-frame,
 #sj-local {
 	flex: 1 1 auto;

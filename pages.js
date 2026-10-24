@@ -112,6 +112,7 @@
 			name: "Blooket Modded",
 			url: "https://play.blooket.com/",
 			img: "apps/blooketbot.png",
+			mod: "apps/blooket-mod.js",
 		},
 		{
 			name: "Discord",
@@ -170,6 +171,7 @@
 	function launchLocal(url, g) {
 		// self-hosted game: load it directly (no proxy), same origin
 		showGameLoader();
+		hideModBtn();
 		closeCurrent();
 		const home = document.getElementById("home");
 		const view = document.getElementById("view");
@@ -237,15 +239,20 @@
 		// loader is on top (z-index 10), so show it now and close the games
 		// page underneath without waiting on its animation
 		showGameLoader();
+		hideModBtn();
 		closeCurrent();
 
 		const a = document.getElementById("sj-address");
 		const f = document.getElementById("sj-form");
 		if (!a || !f) return;
 		a.value = url;
+		// show the inject button as soon as a mod app opens (it floats above the
+		// frame; the splash/loader sits on top until it loads)
+		if (g && g.mod) showModBtn(g.mod);
 		const finish = (event) => {
 			hideGameLoader();
 			if (event.detail.ok && g && g.inject) injectInto(g.inject);
+			if (event.detail.ok && g && g.mod) showModBtn(g.mod);
 		};
 		window.addEventListener("velo-view-finish", finish, { once: true });
 		f.requestSubmit();
@@ -277,6 +284,65 @@
 			setTimeout(inject, 3000);
 		});
 		setTimeout(inject, 1500);
+	}
+
+	// ---- manual "inject mod" overlay button (top-left) ----
+	// apps with a `mod` script get a floating button; clicking it injects the
+	// script into the proxied page on demand (e.g. after you've joined a game).
+	let modBtn = null;
+	function ensureModBtn() {
+		if (modBtn) return modBtn;
+		const view = document.getElementById("view");
+		if (!view) return null;
+		modBtn = document.createElement("button");
+		modBtn.id = "mod-inject-btn";
+		modBtn.type = "button";
+		modBtn.hidden = true;
+		modBtn.textContent = "💉 Inject Mod";
+		modBtn.addEventListener("click", async () => {
+			if (modBtn.disabled) return;
+			const src = modBtn.dataset.src;
+			if (!src) return;
+			modBtn.disabled = true;
+			modBtn.textContent = "injecting…";
+			const ok = await injectScriptOnce(src);
+			modBtn.textContent = ok ? "injected ✓" : "failed — retry";
+			setTimeout(() => {
+				modBtn.textContent = "💉 Inject Mod";
+				modBtn.disabled = false;
+			}, 1600);
+		});
+		view.appendChild(modBtn);
+		return modBtn;
+	}
+	function showModBtn(src) {
+		const b = ensureModBtn();
+		if (!b) return;
+		b.dataset.src = src;
+		b.hidden = false;
+	}
+	function hideModBtn() {
+		if (modBtn) modBtn.hidden = true;
+	}
+	async function injectScriptOnce(src) {
+		let code;
+		try {
+			code = await fetch(src, { cache: "no-store" }).then((r) => r.text());
+		} catch (e) {
+			return false;
+		}
+		const fr = document.getElementById("sj-frame");
+		if (!fr) return false;
+		try {
+			const doc = fr.contentDocument;
+			if (doc && doc.documentElement) {
+				const s = doc.createElement("script");
+				s.textContent = code;
+				doc.documentElement.appendChild(s);
+				return true;
+			}
+		} catch (e) {}
+		return false;
 	}
 
 	function renderTiles(pageEl, list) {
