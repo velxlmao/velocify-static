@@ -61,6 +61,19 @@
 	// ---- catalogues ----
 	const GAMES = [
 		{
+			name: "The Binding of Isaac: Repentance",
+			url: "https://tboi.online/",
+			img: "games/isaac.jpg",
+			imgPosition: "center top",
+		},
+		{
+			name: "Brotato",
+			url: "games/brotato/index.html",
+			img: "games/brotato.jpg",
+			imgPosition: "center top",
+			local: true,
+		},
+		{
 			name: "20 Minutes Till Dawn",
 			url: "games/20-minutes/index.html",
 			img: "games/20-minutes.jpg",
