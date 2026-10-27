@@ -69,6 +69,12 @@
 
 	// ---- catalogues ----
 	const GAMES = [
+		{ name: "Spelunky Classic HD", url: "games/spelunky-classic/index.html", img: "games/spelunky-classic.png", local: true, splash: "load" },
+		{ name: "Celeste Classic", url: "games/celeste-classic/index.html", img: "games/celeste-classic.gif", local: true, splash: "load" },
+		{ name: "DOOM", url: "games/doom/index.html", img: "games/doom.jpg", local: true, splash: "load" },
+		{ name: "ClassiCube", url: "games/classicube/index.html", img: "games/classicube.png", local: true, splash: "load" },
+		{ name: "Friday Night Funkin’", url: "games/friday-night-funkin/index.html", img: "games/friday-night-funkin.gif", local: true, splash: "load" },
+		{ name: "Hextris", url: "games/hextris/index.html", img: "games/hextris.png", local: true, splash: "load" },
 		{ name: "Fears to Fathom", url: "games/fears-to-fathom/index.html", img: "games/fears-to-fathom.jpg", local: true, download: true },
 		{ name: "Fears to Fathom: Home Alone", url: "games/fears-home-alone/index.html", img: "games/fears-to-fathom.jpg", local: true, download: true },
 		{ name: "Hollow Knight", url: "games/hollow-knight/index.html", img: "games/hollow-knight.jpg", local: true, download: true },
