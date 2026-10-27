@@ -2,13 +2,16 @@
 (() => {
 	const canvas = document.getElementById("rain");
 	if (!canvas) return;
+	if (/CrOS/.test(navigator.userAgent || "") || navigator.deviceMemory <= 4 || navigator.hardwareConcurrency <= 4 || matchMedia("(prefers-reduced-motion: reduce)").matches) return;
 	const ctx = canvas.getContext("2d");
+	if (!ctx) return;
+	const visible = () => !document.hidden && !document.body.classList.contains("view-mode") && !document.querySelector(".fullpage.open");
 
 	let w, h, drops;
 
 	function reset() {
-		w = canvas.width = window.innerWidth;
-		h = canvas.height = window.innerHeight;
+		w = canvas.width = Math.min(window.innerWidth, 1280);
+		h = canvas.height = Math.round(window.innerHeight * w / window.innerWidth);
 		const count = Math.round((w * h) / 9000);
 		drops = new Array(count).fill(0).map(spawn);
 	}
@@ -24,6 +27,7 @@
 	}
 
 	function frame() {
+		if (!visible()) { setTimeout(frame, 200); return; }
 		ctx.clearRect(0, 0, w, h);
 		ctx.lineWidth = 1;
 		for (const d of drops) {
@@ -60,6 +64,7 @@
 	const logo = document.querySelector("#home .logo");
 
 	function trail() {
+		if (!visible()) { setTimeout(trail, 200); return; }
 		gx += (tx - gx) * 0.12;
 		gy += (ty - gy) * 0.12;
 		glow.style.transform = `translate(${gx}px, ${gy}px)`;

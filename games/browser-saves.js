@@ -9,7 +9,7 @@ window.persistGameSaves = function (sync) {
 		}).finally(() => { pending = null; });
 		return pending;
 	};
-	setInterval(flush, 2000);
+	setInterval(flush, window.gamePerformance?.constrained ? 15000 : 10000);
 	document.addEventListener("visibilitychange", () => {
 		if (document.hidden) flush();
 	});

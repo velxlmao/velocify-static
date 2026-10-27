@@ -26,6 +26,10 @@
 		return files.get(key);
 	};
 	const nativeFetch = window.fetch.bind(window);
+	window.gameDownloadCache = (name, loaded, total) => {
+		const file = record(name);
+		if (file) { file.loaded = loaded; file.total = total; report(); }
+	};
 	window.fetch = async (input, options) => {
 		const file = record(typeof input === "string" || input instanceof URL ? String(input) : input.url);
 		if (file) { file.loaded = 0; report(); }

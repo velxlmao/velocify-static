@@ -1,27 +1,6 @@
 const originalFetch = window.fetch;
 
-function mergeFiles(fileParts) {
-    return new Promise((resolve, reject) => {
-        let buffers = [];
-
-        function fetchPart(index) {
-            if (index >= fileParts.length) {
-                let mergedBlob = new Blob(buffers, { type: fileParts[0].includes(".wasm") ? "application/wasm" : "application/octet-stream" });
-                let mergedFileUrl = URL.createObjectURL(mergedBlob);
-                resolve(mergedFileUrl);
-                return;
-            }
-            fetch(fileParts[index]).then((response) => {
-                if (!response.ok) throw new Error("Missing part: " + fileParts[index]);
-                return response.arrayBuffer();
-            }).then((data) => {
-                buffers.push(data);
-                fetchPart(index + 1);
-            }).catch(reject);
-        }
-        fetchPart(0);
-    });
-}
+async function mergeFiles(paths) { return (await window.gameAssets.fromPaths(paths)).url; }
 
 function getParts(file, start, end) {
     let parts = [];

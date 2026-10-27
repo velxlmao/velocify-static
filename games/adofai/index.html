@@ -1,6 +1,8 @@
 <!doctype html>
 <html lang="en">
 <head>
+<script src="../performance.js"></script>
+<script src="../game-assets.js"></script>
 <script src="../browser-saves.js"></script>
 <script>window.gameDownloadSizes={"WebGL.data.part001":20971520,"WebGL.data.part002":20971520,"WebGL.data.part003":20971520,"WebGL.data.part004":20971520,"WebGL.data.part005":20971520,"WebGL.data.part006":20971520,"WebGL.data.part007":20971520,"WebGL.data.part008":20971520,"WebGL.data.part009":8410887,"WebGL.wasm.part001":20971520,"WebGL.wasm.part002":20971520,"WebGL.wasm.part003":20971520,"WebGL.wasm.part004":20971520,"WebGL.wasm.part005":20971520,"WebGL.wasm.part006":20971520,"WebGL.wasm.part007":15072224};</script>
 <script src="../download-progress.js?v=2"></script>
@@ -90,30 +92,9 @@ let lastProgress=0;
 function setProgress(value){lastProgress=Math.max(lastProgress,Math.min(100,value*100));progress.style.width=lastProgress+"%";document.getElementById("tinkle-percent").textContent=Math.floor(lastProgress)+"%";document.querySelector(".tinkle-track").setAttribute("aria-valuenow",Math.floor(lastProgress));}
 function fail(error){parent.postMessage({velocify:"game-error"},location.origin);failed=true;loading.hidden=false;status.textContent=error instanceof Error?error.message:String(error);retry.hidden=false;document.querySelector(".tinkle-diamond").style.animationPlayState="paused";}
 retry.addEventListener("click",()=>location.reload());
-async function downloadPart(filename){
-  const primary=new URL(BUILD+filename+"?v="+VERSION,document.baseURI).href;
-  const backup="https://raw.githubusercontent.com/Nawsif/host/fbcced4b685d2aa636346573dd8887408ec081c1/ADOFAI/Build/"+filename;
-  let lastError;
-  for(const url of [primary,backup,primary]){
-    try{
-      const response=await fetch(url,{signal:AbortSignal.timeout(30000)});
-      if(!response.ok)throw new Error("HTTP "+response.status);
-      const bytes=await response.arrayBuffer();
-      if(bytes.byteLength!==window.gameDownloadSizes[filename])throw new Error("incomplete download");
-      return bytes;
-    }catch(error){lastError=error;status.textContent="Retrying "+filename+"…";}
-  }
-  throw new Error("Could not load "+filename+": "+lastError.message+". Try again.");
-}
 async function joinParts(name,count,type){
-  const buffers=[];
-  for(let part=1;part<=count;part++){
-    const filename=name+".part"+String(part).padStart(3,"0");
-    const bytes=await downloadPart(filename);
-    buffers.push(bytes);completed++;
-    if(!failed){setProgress(completed/16*.75);status.textContent="Loading game filesâ€¦ "+completed+" / 16";}
-  }
-  const url=URL.createObjectURL(new Blob(buffers,{type}));objectUrls.push(url);return url;
+  const paths=Array.from({length:count},(_,index)=>new URL(BUILD+name+".part"+String(index+1).padStart(3,"0"),document.baseURI).href);
+  return (await window.gameAssets.fromPaths(paths,{type,onProgress(loaded,total){if(!failed){setProgress(loaded/total*.75);status.textContent="downloading content "+(loaded/1048576).toFixed(1)+"/"+(total/1048576).toFixed(1)+"mb";}}})).url;
 }
 function loadScript(url){return new Promise((resolve,reject)=>{const script=document.createElement("script");script.src=url;script.onload=resolve;script.onerror=()=>reject(new Error("Could not load "+BUILD+"WebGL.loader.js."));document.body.appendChild(script);});}
 async function start(){
@@ -127,11 +108,11 @@ async function start(){
   unityInstance=await createUnityInstance(canvas,{
     dataUrl,codeUrl,frameworkUrl:new URL("framework.js",location.href).href,
     streamingAssetsUrl:new URL("StreamingAssets/",document.baseURI).href,companyName:"7th Beat Games",productName:"A Dance of Fire and Ice",productVersion:"2.0.3",
-    matchWebGLToCanvasSize:true,
+    matchWebGLToCanvasSize:true,devicePixelRatio:window.gamePerformance.ratio(),
     showBanner(message,type){if(type==="error")fail(message);else console.warn(message);}
   },value=>{if(!failed)setProgress(.75+value*.25);});
   parent.postMessage({velocify:"game-ready"},location.origin);
-  objectUrls.forEach(url=>URL.revokeObjectURL(url));
+  window.gameAssets.release();objectUrls.forEach(url=>URL.revokeObjectURL(url));
   if(!failed){setProgress(1);status.textContent="Ready!";loading.classList.add("fading");setTimeout(()=>{loading.hidden=true;document.getElementById("play-screen").hidden=false;document.getElementById("play").focus();},750);}
 }
 // Fill the browser window automatically. Double-click for browser fullscreen.

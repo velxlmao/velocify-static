@@ -1,6 +1,9 @@
 <!DOCTYPE html>
 <html>
 <head>
+<script src="../performance.js"></script>
+<script src="../game-assets.js"></script>
+<script src="assets.js"></script>
 <script src="../browser-saves.js"></script>
 <script>window.gameDownloadSizes={"gd_web.data.part1":19922944,"gd_web.data.part10":19922944,"gd_web.data.part11":19922944,"gd_web.data.part12":19922944,"gd_web.data.part13":19922944,"gd_web.data.part14":19922944,"gd_web.data.part15":19922944,"gd_web.data.part16":15656699,"gd_web.data.part2":19922944,"gd_web.data.part3":19922944,"gd_web.data.part4":19922944,"gd_web.data.part5":19922944,"gd_web.data.part6":19922944,"gd_web.data.part7":19922944,"gd_web.data.part8":19922944,"gd_web.data.part9":19922944,"gd_web.wasm.part1":19922944,"gd_web.wasm.part2":19922944,"gd_web.wasm.part3":19922944,"gd_web.wasm.part4":10060133};</script>
 <script src="../download-progress.js"></script>
@@ -141,9 +144,14 @@
           Object.defineProperty(this, 'status', { value: 200 });
           Object.defineProperty(this, 'readyState', { value: 4 });
           Object.defineProperty(this, 'response', { value: this.responseType === 'arraybuffer' ? ab : new TextDecoder().decode(ab) });
-          Object.defineProperty(this, 'responseText', { value: new TextDecoder().decode(ab) });
+          if (this.responseType !== 'arraybuffer') Object.defineProperty(this, 'responseText', { value: this.response });
           if (typeof this.onreadystatechange === 'function') this.onreadystatechange();
           if (typeof this.onload === 'function') this.onload();
+        }).catch(err => {
+          const overlay = document.getElementById('errOverlay');
+          if (overlay) { overlay.textContent = err.message || String(err); overlay.classList.add('on'); }
+          parent.postMessage({velocify:'game-error'},location.origin);
+          if (typeof this.onerror === 'function') this.onerror(err);
         });
         return;
       }
@@ -152,88 +160,9 @@
   })();
 </script>
 
-<!-- 2. RESILIENT CHUNK DOWNLOADER & REASSEMBLER -->
-<script>
-(function() {
-  const CDN = window.__CDN_BASE;
-  const WASM_PARTS = 4;
-  const DATA_PARTS = 16;
+<script>window.nativeFetch = window.fetch.bind(window);</script>
 
-  let mergedDataBlob = null;
-  let dataFetchPromise = null;
 
-  function sleep(ms) {
-    return new Promise(resolve => setTimeout(resolve, ms));
-  }
-
-  async function fetchChunkWithRetry(url, retries = 3) {
-    for (let attempt = 1; attempt <= retries; attempt++) {
-      try {
-        let res = await window.nativeFetch(url);
-        if (!res.ok && (res.status === 403 || res.status === 429)) {
-          await sleep(600 * attempt);
-          res = await window.nativeFetch(url + `?t=${Date.now()}`);
-        }
-        if (res.ok) return await res.arrayBuffer();
-      } catch (err) {
-        if (attempt === retries) throw err;
-        await sleep(500 * attempt);
-      }
-    }
-    throw new Error(`Failed to load chunk ${url}`);
-  }
-
-  async function fetchParts(prefix, count, whichKey) {
-    let chunks = [];
-    let totalBytes = 0;
-
-    for (let i = 1; i <= count; i++) {
-      const url = `${CDN}${prefix}.part${i}`;
-      const buf = await fetchChunkWithRetry(url);
-      chunks.push(new Uint8Array(buf));
-      totalBytes += buf.byteLength;
-      
-      if (window.setAssetBar) {
-        window.setAssetBar(whichKey, totalBytes, 0);
-      }
-      await sleep(80);
-    }
-
-    const merged = new Uint8Array(totalBytes);
-    let offset = 0;
-    for (const chunk of chunks) {
-      merged.set(chunk, offset);
-      offset += chunk.length;
-    }
-    return merged;
-  }
-
-  window.__loadMergedData = function() {
-    if (!dataFetchPromise) {
-      dataFetchPromise = fetchParts('gd_web.data', DATA_PARTS, 'data').then(u8 => {
-        mergedDataBlob = new Blob([u8], { type: 'application/octet-stream' });
-        if (window.forceDataDone) window.forceDataDone();
-        return mergedDataBlob;
-      });
-    }
-    return dataFetchPromise;
-  };
-
-  window.__loadMergedWasm = function() {
-    return fetchParts('gd_web.wasm', WASM_PARTS, 'wasm');
-  };
-
-  window.nativeFetch = window.fetch.bind(window);
-})();
-</script>
-
-<script async src="https://www.googletagmanager.com/gtag/js?id=G-PXHK7Q7G3Z"></script>
-<script>
-  window.dataLayer = window.dataLayer || [];
-  function gtag(){dataLayer.push(arguments);}
-  gtag("js", new Date());
-  gtag("config", "G-PXHK7Q7G3Z");
-</script>
 <script>
 window.__framed = window.self !== window.top;
 window.addEventListener("message", function(e) {
@@ -290,7 +219,7 @@ html{background:#000;}body{margin:0;height:100%;color:#ddd;font-family:monospace
 
 <script>
 var consoleEl = document.getElementById('console');
-try { Error.stackTraceLimit = 400; } catch (e) {}
+try { Error.stackTraceLimit = 32; } catch (e) {}
 var GD_DEBUG = /[?&]debug(=|&|$)/.test(location.search);
 if (!GD_DEBUG) {
   try { console.log = console.info = console.debug = function () {}; } catch (e) {}
@@ -507,7 +436,7 @@ setInterval(gdProgressTick, 200);
     if (now - lastT >= 500) {
       if (!window.__gdRuntimeReady) {
         lastT = now;
-        requestAnimationFrame(tick);
+        setTimeout(() => tick(performance.now()),500);
         return;
       }
       var n = 0;
@@ -525,9 +454,9 @@ setInterval(gdProgressTick, 200);
       }
       lastT = now;
     }
-    requestAnimationFrame(tick);
+    setTimeout(() => tick(performance.now()),500);
   }
-  requestAnimationFrame(tick);
+  setTimeout(() => tick(performance.now()),500);
 })();
 
 function restoreSaves(then) {
@@ -586,11 +515,14 @@ var Module = {
     window.__loadMergedWasm().then(function (wasmU8) {
       gdAssetDone.wasm = true;
       window.setAssetBar('wasm', GD_SIZE_HINT.wasm, GD_SIZE_HINT.wasm);
-      return WebAssembly.instantiate(wasmU8.buffer, imports);
+      return WebAssembly.instantiateStreaming(Promise.resolve(new Response(wasmU8, {headers:{"Content-Type":"application/wasm"}})), imports);
     }).then(function (r) {
       success(r.instance, r.module);
     }).catch(function (err) {
       say('[wasm] split load failed: ' + err);
+      const overlay = document.getElementById('errOverlay');
+      if (overlay) { overlay.textContent = err.message || String(err); overlay.classList.add('on'); }
+      parent.postMessage({velocify:'game-error'},location.origin);
     });
     return {};
   },
@@ -613,6 +545,7 @@ var Module = {
   },
   onRuntimeInitialized: function () {
     window.__gdRuntimeReady = true;
+    document.getElementById("bg").style.display = "none";
     if (!GD_DEBUG && Module._gd_log_set) Module._gd_log_set(0);
     if (/[?&]noauto/.test(location.search) && Module._gd_autosave_set) Module._gd_autosave_set(0);
     setProgress(82);

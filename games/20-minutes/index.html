@@ -1,6 +1,8 @@
 <!DOCTYPE html>
 <html lang="en-us">
   <head>
+<script src="../performance.js"></script>
+<script src="../game-assets.js"></script>
 <script>window.gameDownloadSizes={"20minutes.data.part1":20866662,"20minutes.data.part2":10052265,"20minutes.wasm.part1":20866662,"20minutes.wasm.part2":5864515};</script>
 <script src="../download-progress.js"></script>
     <script src="../browser-saves.js"></script>
@@ -62,49 +64,7 @@ var loadingText = document.querySelector("#loading-text");
     let totalBytes = 0;
     let loadedBytes = 0;
 
-    async function fetchWithProgress(url) {
-      const response = await fetch(url);
-      const reader = response.body.getReader();
-      let chunks = [];
-      let received = 0;
-      while (true) {
-        const {
-          done,
-          value
-        } = await reader.read();
-        if (done) break;
-        received += value.length;
-        loadedBytes += value.length;
-        chunks.push(value);
-        let mbDone = (loadedBytes / (1024 * 1024)).toFixed(2);
-        let mbTotal = '48.02';
-        loadingText.textContent = `LOADING... ${mbDone} MB / ${mbTotal} MB`;
-      }
-      let fullBuffer = new Uint8Array(received);
-      let offset = 0;
-      for (let chunk of chunks) {
-        fullBuffer.set(chunk, offset);
-        offset += chunk.length;
-      }
-      return fullBuffer.buffer;
-    }
-
-    async function mergeFiles(fileParts, cacheKey) {
-      const cache = await caches.open("20mins-cache");
-      const cachedResponse = await cache.match(cacheKey);
-      if (cachedResponse) {
-        const cached = await cachedResponse.blob();
-        const blob = cacheKey.endsWith(".wasm") ? cached.slice(0, cached.size, "application/wasm") : cached;
-        return URL.createObjectURL(blob);
-      }
-      const buffers = await Promise.all(
-        fileParts.map(part => fetchWithProgress(part))
-      );
-      const mergedBlob = new Blob(buffers, { type: cacheKey.endsWith(".wasm") ? "application/wasm" : "application/octet-stream" });
-      const response = new Response(mergedBlob);
-      await cache.put(cacheKey, response);
-      return URL.createObjectURL(mergedBlob);
-    }
+    async function mergeFiles(paths) { return (await window.gameAssets.fromPaths(paths)).url; }
 
     function getParts(file, start, end) {
       let parts = [];
@@ -156,10 +116,11 @@ var loadingText = document.querySelector("#loading-text");
       var script = document.createElement("script");
       script.src = loaderUrl;
       script.onload = () => {
-        createUnityInstance(canvas, config, (progress) => {
+        createUnityInstance(canvas, window.gamePerformance.unity(config), (progress) => {
           progressBarFull.style.width = 100 * progress + "%";
         }).then((unityInstance) => {
-          loadingBar.style.display = "none";
+          window.gameAssets.release();
+            loadingBar.style.display = "none";
           loadingText.remove();
           parent.postMessage({ velocify: "game-ready" }, location.origin);
         }).catch((message) => {
