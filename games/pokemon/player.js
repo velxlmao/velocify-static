@@ -23,8 +23,7 @@
   window.EJS_gameName = game.title; window.EJS_gameUrl = url;
   window.EJS_pathtodata = 'https://cdn.emulatorjs.org/4.2.3/data/';
   window.EJS_threads = false; window.EJS_startOnLoaded = false;
-  window.EJS_defaultOptions = {'save-state-location':'browser','save-state-slot':1};
-  window.EJS_fixedSaveInterval = 10000;
+  window.EJS_defaultOptions = {'save-state-location':'browser','save-state-slot':1,'save-save-interval':30};
   const saved = database ? await read(game.slug+':save') : null;
   window.EJS_onGameStart = () => {
    const emulator = window.EJS_emulator, manager = emulator.gameManager;
