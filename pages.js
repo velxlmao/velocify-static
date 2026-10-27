@@ -363,7 +363,8 @@
 		const grid = pageEl.querySelector(".tile-grid");
 		if (!grid) return;
 		grid.replaceChildren();
-		for (const item of list) {
+		const query = pageEl.querySelector("#game-search")?.value.trim().toLowerCase() || "";
+		for (const item of list.filter(item => item.name.toLowerCase().includes(query))) {
 			const tile = document.createElement("button");
 			tile.className = "game-tile";
 			tile.title = item.name;
@@ -385,6 +386,7 @@
 	}
 
 
+	document.getElementById("game-search").addEventListener("input", () => renderTiles(pages.games, GAMES));
 	navs.games.addEventListener("click", () => openPage("games"));
 	navs.apps.addEventListener("click", () => openPage("apps"));
 	navs.ai.addEventListener("click", () => openPage("ai"));

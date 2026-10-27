@@ -51,7 +51,7 @@
 		<script src="lib/s/reader.js?v=bf0df93aa3b1"></script>
 		<script src="lib/m/index.js"></script>
 
-		<link rel="stylesheet" href="index.css?v=75426b5844f8" />
+		<link rel="stylesheet" href="index.css?v=102cd83a3e38" />
 		<link rel="stylesheet" href="ai.css?v=6e696c80dab2" />
 		<link rel="stylesheet" href="chat.css?v=aa3a7d9d901a" />
 		<link rel="stylesheet" href="decoy.css" />
@@ -64,7 +64,7 @@
 		<script src="settings.js?v=d39e6d1472eb" defer></script>
 		<script src="decoy.js?v=e2b29f7924f6" defer></script>
 		<script src="cloak.js?v=617ed136374f" defer></script>
-		<script src="pages.js?v=78c1d284bda4" defer></script>
+		<script src="pages.js?v=2528dba10563" defer></script>
 		<script src="ai-store.js?v=faa0feaf639c" defer></script>
 		<script src="ai.js?v=9fb056e87e2e" defer></script>
 		<script src="chat.js?v=0686a4211089" defer></script>
@@ -188,10 +188,11 @@
 			<div class="page-head">
 				<button class="page-back" data-close="1" title="back">&#8592;</button>
 				<h1 class="page-title">games</h1>
+				<input id="game-search" class="game-search" type="search" placeholder="search games" aria-label="search games" autocomplete="off">
 			</div>
 			<div class="page-body">
 				<div class="tile-grid"></div>
-				<p class="page-empty">nothing here yet</p>
+				<p class="page-empty" role="status">no games found</p>
 			</div>
 		</div>
 		<div id="apps-page" class="fullpage" hidden>
