@@ -26,14 +26,15 @@
         'https://fastly.jsdelivr.net/gh/c00lkiddtech/scratchy@f53c1a492a067d41ab95ef53510e0a00bde6a828/scratchy/',
         'https://gcore.jsdelivr.net/gh/c00lkiddtech/scratchy@f53c1a492a067d41ab95ef53510e0a00bde6a828/scratchy/'
       ];
-      function script(url) {
-        return new Promise((resolve, reject) => {
+      async function script(url) {
+        const blob = await window.scratchyDownload(url);
+        try { return await new Promise((resolve, reject) => {
           const el = document.createElement('script');
-          el.src = url;
+          el.src = blob;
           el.onload = () => { el.remove(); resolve(); };
           el.onerror = () => { el.remove(); reject(new Error(url)); };
           document.head.appendChild(el);
-        });
+        }); } finally { URL.revokeObjectURL(blob); }
       }
       window.loadGameFile = async function(path) {
         for (const root of roots) {
