@@ -7,6 +7,9 @@
 #chat-page input, #chat-page textarea, #chat-page button { font: inherit; color: var(--text); }
 #chat-page input, #chat-page textarea { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: var(--sp); min-width: 0; }
 #chat-name { width: min(220px,100%); }
+#chat-password-wrap { display: flex; align-items: center; gap: var(--sp); flex-wrap: wrap; }
+#chat-password { width: min(220px,100%); }
+.chat-owner { color: var(--accent); font-size: 12px; font-weight: 600; }
 #chat-page button:not(.page-back) { border: 1px solid var(--border); background: var(--surface); border-radius: var(--radius); padding: var(--sp); cursor: pointer; }
 #chat-page button:hover { border-color: var(--accent); }
 #chat-page button:focus-visible, #chat-page input:focus-visible, #chat-page textarea:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }

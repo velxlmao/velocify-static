@@ -5,6 +5,14 @@
  let socket, reconnect, retry = 0, ownId = '', visible = false, ready = false, pending = '', sentAt = 0;
  const messages = new Map();
  try { name.value = localStorage.getItem('velocify-chat-name') || ''; } catch {}
+ function passwordPrompt() {
+  const owner = name.value.trim().toLowerCase() === 'velx';
+  $('chat-password-wrap').hidden = !owner;
+  $('chat-password').required = owner;
+  if (!owner) $('chat-password').value = '';
+ }
+ passwordPrompt();
+ name.addEventListener('input', passwordPrompt);
  function error(text = '') { $('chat-error').textContent = text; $('chat-error').hidden = !text; }
  function controls() {
   $('chat-send').disabled = !ready || !!pending || !input.value.trim();
@@ -20,7 +28,9 @@
    if (message.authorId === ownId) row.classList.add('own');
    const heading = document.createElement('header'), author = document.createElement('strong'), time = document.createElement('time'), text = document.createElement('p');
    author.textContent = message.name; time.dateTime = new Date(message.time).toISOString(); time.textContent = new Date(message.time).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-   text.textContent = message.text; heading.append(author, time); row.append(heading, text); list.append(row);
+   text.textContent = message.text; heading.append(author);
+   if (message.owner === true) { const badge = document.createElement('span'); badge.className = 'chat-owner'; badge.textContent = 'owner'; heading.append(badge); }
+   heading.append(time); row.append(heading, text); list.append(row);
   }
   if (follow) list.scrollTop = list.scrollHeight;
  }
@@ -30,7 +40,7 @@
   socket = new WebSocket('wss://velocify-public-chat.realdashvr.workers.dev/connect');
   const connection = socket;
   controls();
-  socket.onopen = () => { retry = 0; if (name.value.trim()) setName(); controls(); };
+  socket.onopen = () => { retry = 0; if (name.value.trim() && (name.value.trim().toLowerCase() !== 'velx' || $('chat-password').value)) setName(); controls(); };
   socket.onmessage = event => {
    try {
     const data = JSON.parse(event.data);
@@ -58,7 +68,7 @@
   const value = name.value.trim();
   if (!value || value.length > 24) { error('Choose a name between 1 and 24 characters.'); return; }
   try { localStorage.setItem('velocify-chat-name', value); } catch {}
-  if (socket?.readyState === WebSocket.OPEN) { ready = false; socket.send(JSON.stringify({ type: 'name', name: value })); controls(); }
+  if (socket?.readyState === WebSocket.OPEN) { ready = false; socket.send(JSON.stringify({ type: 'name', name: value, password: value.toLowerCase() === 'velx' ? $('chat-password').value : undefined })); controls(); }
   else connect();
  }
  $('chat-name-form').addEventListener('submit', event => { event.preventDefault(); setName(); });

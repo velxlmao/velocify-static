@@ -53,7 +53,7 @@
 
 		<link rel="stylesheet" href="index.css?v=75426b5844f8" />
 		<link rel="stylesheet" href="ai.css?v=6e696c80dab2" />
-		<link rel="stylesheet" href="chat.css?v=1aebf6807f08" />
+		<link rel="stylesheet" href="chat.css?v=aa3a7d9d901a" />
 		<link rel="stylesheet" href="decoy.css" />
 		<script src="register-sw.js?v=e4164d073878" defer></script>
 		<script src="search.js" defer></script>
@@ -67,7 +67,7 @@
 		<script src="pages.js?v=4318a574bbf4" defer></script>
 		<script src="ai-store.js?v=faa0feaf639c" defer></script>
 		<script src="ai.js?v=9fb056e87e2e" defer></script>
-		<script src="chat.js?v=9cc01fa9ae6d" defer></script>
+		<script src="chat.js?v=0686a4211089" defer></script>
 	</head>
 
 	<body>
@@ -226,7 +226,7 @@
 <section id="chat-page" class="fullpage" hidden>
 	<header class="page-head chat-head"><button class="page-back" data-close="1" aria-label="back">&#8592;</button><h1 class="page-title">public chat</h1><p id="chat-status" role="status">disconnected</p></header>
 	<div class="chat-content">
-		<form id="chat-name-form"><label for="chat-name">your name</label><input id="chat-name" maxlength="24" required autocomplete="nickname" placeholder="display name"><button type="submit">set name</button></form>
+		<form id="chat-name-form"><label for="chat-name">your name</label><input id="chat-name" maxlength="24" required autocomplete="nickname" placeholder="display name"><span id="chat-password-wrap" hidden><label for="chat-password">owner password</label><input id="chat-password" type="password" maxlength="128" autocomplete="current-password" placeholder="owner password"></span><button type="submit">set name</button></form>
 		<p class="chat-note">messages are public. display names are unverified. last 100 messages are saved.</p>
 		<div id="chat-messages" role="log" aria-label="public messages" aria-live="polite" aria-relevant="additions"></div>
 		<p id="chat-error" role="alert" hidden></p>
