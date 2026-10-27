@@ -48,14 +48,15 @@
   if (port.kind === 'legacy') {
    window.dataUrll = await merged('FTFHAPort.data.unityweb');
    status.textContent = 'starting game…';
-   const instance = UnityLoader.instantiate('unityContainer', {
+   const config = {
     companyName: 'Rayll', productName: 'Fears To Fathom',
     dataUrl: base + 'Build/FTFHAPort.data.unityweb',
     wasmCodeUrl: base + 'Build/FTFHAPort.wasm.code.unityweb',
     wasmFrameworkUrl: base + 'Build/FTFHAPort.wasm.framework.unityweb',
     TOTAL_MEMORY: 536870912, graphicsAPI: ['WebGL 2.0','WebGL 1.0'], splashScreenStyle: 'Dark',
     webglContextAttributes: { preserveDrawingBuffer: false }, cacheControl: { default: 'must-revalidate' }
-   }, { Module: { onRuntimeInitialized: ready }, onProgress: (_, progress) => { if (progress >= 1) ready(); } });
+   };
+   const instance = UnityLoader.instantiate('unityContainer', blob([JSON.stringify(config)], 'application/json'), { Module: { onRuntimeInitialized: ready }, onProgress: (_, progress) => { if (progress >= 1) ready(); } });
    if (!instance) throw Error('Game could not start.');
    if (instance.Module) window.persistGameSaves(() => new Promise((resolve,reject) => instance.Module.FS?.syncfs ? instance.Module.FS.syncfs(false, error => error ? reject(error) : resolve()) : resolve()));
   } else {
