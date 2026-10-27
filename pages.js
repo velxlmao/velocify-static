@@ -69,6 +69,12 @@
 
 	// ---- catalogues ----
 	const GAMES = [
+		{ name: "Balatro", url: "games/balatro/index.html", img: "games/balatro.jpg", local: true, splash: "load" },
+		{ name: "R.E.P.O.", url: "games/repo/index.html", img: "games/repo.jpg", local: true, download: true },
+		{ name: "WEBFISHING", url: "games/web-fishing/index.html", img: "games/web-fishing.jpg", local: true, download: true },
+		{ name: "Pizza Tower", url: "games/pizza-tower/index.html", img: "games/pizza-tower.jpg", local: true, download: true },
+		{ name: "That's Not My Neighbor", url: "games/thats-not-my-neighbor/index.html", img: "games/thats-not-my-neighbor.jpg", local: true, download: true },
+		{ name: "People Playground", url: "games/people-playground/index.html", img: "games/people-playground.jpg", local: true, download: true },
 		{ name: "Spelunky Classic HD", url: "games/spelunky-classic/index.html", img: "games/spelunky-classic.png", local: true, splash: "load" },
 		{ name: "Celeste Classic", url: "games/celeste-classic/index.html", img: "games/celeste-classic.gif", local: true, splash: "load" },
 		{ name: "DOOM", url: "games/doom/index.html", img: "games/doom.jpg", local: true, splash: "load" },
