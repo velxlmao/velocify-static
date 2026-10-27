@@ -53,6 +53,7 @@
 
 		<link rel="stylesheet" href="index.css?v=75426b5844f8" />
 		<link rel="stylesheet" href="ai.css?v=6e696c80dab2" />
+		<link rel="stylesheet" href="chat.css?v=1aebf6807f08" />
 		<link rel="stylesheet" href="decoy.css" />
 		<script src="register-sw.js?v=e4164d073878" defer></script>
 		<script src="search.js" defer></script>
@@ -63,9 +64,10 @@
 		<script src="settings.js?v=d39e6d1472eb" defer></script>
 		<script src="decoy.js?v=e2b29f7924f6" defer></script>
 		<script src="cloak.js?v=617ed136374f" defer></script>
-		<script src="pages.js?v=7506f2fec4da" defer></script>
+		<script src="pages.js?v=4318a574bbf4" defer></script>
 		<script src="ai-store.js?v=faa0feaf639c" defer></script>
 		<script src="ai.js?v=9fb056e87e2e" defer></script>
+		<script src="chat.js?v=9cc01fa9ae6d" defer></script>
 	</head>
 
 	<body>
@@ -108,6 +110,9 @@
 			</button>
 			<button id="nav-ai" class="nav-btn" title="velxAI" aria-label="velxAI">
 				<svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M21 11.5a8.5 8.5 0 0 1-8.5 8.5H4l-2 2V11.5a9.5 9.5 0 0 1 19 0Z"/><path d="M7 10h10M7 14h6"/></svg>
+			</button>
+			<button id="nav-chat" class="nav-btn" title="public chat" aria-label="public chat">
+				<svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M21 11a7 7 0 0 1-7 7H9l-5 3v-5a7 7 0 0 1-2-5 9 9 0 0 1 19 0Z"/><path d="M7 9h10M7 13h6"/></svg>
 			</button>
 			<button id="nav-settings" class="nav-btn" title="settings" aria-label="settings">
 				<svg viewBox="0 0 24 24" width="22" height="22" fill="none"
@@ -216,6 +221,16 @@
 			<div class="ai-compose-actions"><button id="ai-retry" type="button" hidden>retry response</button><button id="ai-stop" type="button" hidden>stop response</button></div>
 			<form id="ai-form"><textarea id="ai-input" aria-label="message velxAI" placeholder="message velxAI" maxlength="12000" rows="1" disabled></textarea><button id="ai-send" class="ai-icon" aria-label="send message" type="submit" disabled>&#8593;</button></form>
 		</div>
+	</div>
+</section>
+<section id="chat-page" class="fullpage" hidden>
+	<header class="page-head chat-head"><button class="page-back" data-close="1" aria-label="back">&#8592;</button><h1 class="page-title">public chat</h1><p id="chat-status" role="status">disconnected</p></header>
+	<div class="chat-content">
+		<form id="chat-name-form"><label for="chat-name">your name</label><input id="chat-name" maxlength="24" required autocomplete="nickname" placeholder="display name"><button type="submit">set name</button></form>
+		<p class="chat-note">messages are public. display names are unverified. last 100 messages are saved.</p>
+		<div id="chat-messages" role="log" aria-label="public messages" aria-live="polite" aria-relevant="additions"></div>
+		<p id="chat-error" role="alert" hidden></p>
+		<form id="chat-form"><textarea id="chat-input" maxlength="500" rows="2" aria-label="chat message" placeholder="send a message" disabled></textarea><button id="chat-send" type="submit" disabled>send</button></form>
 	</div>
 </section>
 <div id="game-loader" hidden>

@@ -4,11 +4,13 @@
 		games: document.getElementById("games-page"),
 		apps: document.getElementById("apps-page"),
 		ai: document.getElementById("ai-page"),
+		chat: document.getElementById("chat-page"),
 	};
 	const navs = {
 		games: document.getElementById("nav-games"),
 		apps: document.getElementById("nav-apps"),
 		ai: document.getElementById("nav-ai"),
+		chat: document.getElementById("nav-chat"),
 	};
 	const home = document.getElementById("home");
 	const navHome = document.getElementById("nav-home");
@@ -17,6 +19,7 @@
 	let animating = false;
 
 	function hide(el, nav, then) {
+		if (el === pages.chat) window.dispatchEvent(new Event("velx-chat-close"));
 		animating = true;
 		el.classList.remove("open");
 		el.classList.add("closing");
@@ -41,13 +44,14 @@
 		}
 		const show = () => {
 			const el = pages[name];
-			if (name !== "ai") renderTiles(el, name === "games" ? GAMES : APPS);
+			if (name === "games" || name === "apps") renderTiles(el, name === "games" ? GAMES : APPS);
 			el.hidden = false;
 			el.classList.remove("closing");
 			el.classList.add("open");
 			navs[name].classList.add("active");
 			current = name;
 			if (name === "ai") window.dispatchEvent(new Event("velx-ai-open"));
+			if (name === "chat") window.dispatchEvent(new Event("velx-chat-open"));
 		};
 		if (current) hide(pages[current], navs[current], show);
 		else show();
@@ -65,6 +69,10 @@
 
 	// ---- catalogues ----
 	const GAMES = [
+		{ name: "Fears to Fathom", url: "games/fears-to-fathom/index.html", img: "games/fears-to-fathom.jpg", local: true, download: true },
+		{ name: "Fears to Fathom: Home Alone", url: "games/fears-home-alone/index.html", img: "games/fears-to-fathom.jpg", local: true, download: true },
+		{ name: "Hollow Knight", url: "games/hollow-knight/index.html", img: "games/hollow-knight.jpg", local: true, download: true },
+		{ name: "Scritchy Scratchy", url: "games/scritchy-scratchy/index.html", img: "games/scritchy-scratchy.jpg", local: true, download: true },
 		{ name: "Cuphead", url: "games/cuphead/index.html", img: "games/cuphead.jpg", imgPosition: "center top", local: true, download: true },
 		{ name: "A Dance of Fire and Ice", url: "games/adofai/index.html?v=2", img: "games/adofai.jpg", imgPosition: "center top", local: true, download: true },
 		{ name: "Flying Gorilla", url: "games/flying-gorilla/index.html", img: "games/flying-gorilla.png", imgPosition: "center top", local: true, download: true },
@@ -374,6 +382,7 @@
 	navs.games.addEventListener("click", () => openPage("games"));
 	navs.apps.addEventListener("click", () => openPage("apps"));
 	navs.ai.addEventListener("click", () => openPage("ai"));
+	navs.chat.addEventListener("click", () => openPage("chat"));
 	navHome.addEventListener("click", () => closeCurrent());
 
 	for (const name of Object.keys(pages)) {
