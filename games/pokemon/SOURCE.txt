@@ -1,3 +1,0 @@
-Emulation: https://github.com/EmulatorJS/EmulatorJS/tree/v4.2.3 (GPL-3.0)
-Box art: https://github.com/libretro-thumbnails
-No game ROMs are included.

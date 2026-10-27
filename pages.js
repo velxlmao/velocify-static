@@ -69,7 +69,6 @@
 
 	// ---- catalogues ----
 	const GAMES = [
-		...window.pokemonGames.map(game => ({name:game.title,url:"games/pokemon/index.html?game="+game.slug,img:"games/pokemon/covers/"+game.slug+".png",local:true,splash:"load"})),
 		{ name: "Fears to Fathom", url: "games/fears-to-fathom/index.html", img: "games/fears-to-fathom.jpg", local: true, download: true },
 		{ name: "Fears to Fathom: Home Alone", url: "games/fears-home-alone/index.html", img: "games/fears-to-fathom.jpg", local: true, download: true },
 		{ name: "Hollow Knight", url: "games/hollow-knight/index.html", img: "games/hollow-knight.jpg", local: true, download: true },
