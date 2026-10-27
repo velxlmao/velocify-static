@@ -4,6 +4,11 @@
  const parts = (prefix,count) => Array.from({length:count},(_,index) => 'Build/'+prefix+'.part'+(index+1));
  try {
   if (!window.WebAssembly) throw Error('This port needs WebAssembly support.');
+  const dataSize = Object.entries(window.gameDownloadSizes).filter(([name]) => name.includes('CupheadPort.data.')).reduce((sum,[,size]) => sum + size,0);
+  if (navigator.deviceMemory <= 4 && dataSize > 1024 ** 3 && !new URLSearchParams(location.search).has('allowHeavy')) {
+   const problem = Error('This Cuphead build has over 2 GB of game data and can crash devices with 4 GB of RAM or less. Lower graphics cannot shrink its fixed game files.');
+   problem.allowHeavy = true; throw problem;
+  }
   for (const name of Object.keys(window.gameDownloadSizes)) if (name.includes('.asm.')) delete window.gameDownloadSizes[name];
   await caches.delete('cuphead-cache').catch(() => {});
   const onProgress = (loaded,total) => { loading.textContent = 'downloading content '+(loaded/1048576).toFixed(1)+'/'+(total/1048576).toFixed(1)+'mb'; };
@@ -27,7 +32,9 @@
   }});
  } catch (error) {
   loading.textContent = error.message || String(error);
-  const retry = document.createElement('button'); retry.textContent = 'retry'; retry.onclick = () => location.reload(); loading.append(document.createElement('br'),retry);
+  const retry = document.createElement('button'); retry.textContent = error.allowHeavy ? 'try anyway' : 'retry';
+  retry.onclick = () => { if (!error.allowHeavy) return location.reload(); const url = new URL(location.href); url.searchParams.set('allowHeavy','1'); location.href = url.href; };
+  loading.append(document.createElement('br'),retry);
   parent.postMessage({velocify:'game-error'},location.origin);
  }
 })();
