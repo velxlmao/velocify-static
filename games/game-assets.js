@@ -77,7 +77,7 @@
    const match = /^https:\/\/cdn\.jsdelivr\.net\/gh\/([^@]+)@([^/]+)\/(.+)$/.exec(url);
    return {url,size:window.gameDownloadSizes?.[name],backup:match ? 'https://raw.githubusercontent.com/'+match[1]+'/'+match[2]+'/'+match[3] : undefined};
   });
-  return this.merge({parts,type:paths[0]?.endsWith('.wasm') ? 'application/wasm' : 'application/octet-stream',...options});
+  return this.merge({parts,type:/\.wasm(?:\.part\d+)?(?:[?#]|$)/.test(paths[0]) ? 'application/wasm' : 'application/octet-stream',...options});
  }, release() { for (const url of activeUrls) URL.revokeObjectURL(url); activeUrls.clear(); } };
  window.addEventListener('pagehide', () => { controller.abort(); window.gameAssets.release(); });
 })();

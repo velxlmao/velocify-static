@@ -22,7 +22,7 @@
   async function merged(prefix) {
    const names = Object.keys(port.sizes).filter(name => name.startsWith(prefix + '.part')).sort((a,b) => Number(a.split('.part')[1]) - Number(b.split('.part')[1]));
    if (!names.length) throw Error('Game files are missing.');
-   return (await window.gameAssets.merge({ parts: names.map(name => ({url:base+'Build/'+name,backup:backup+'Build/'+name,size:port.sizes[name]})),
+   return (await window.gameAssets.merge({ type:prefix.endsWith('.wasm')?'application/wasm':'application/octet-stream',parts: names.map(name => ({url:base+'Build/'+name,backup:backup+'Build/'+name,size:port.sizes[name]})),
     onProgress(loaded,total) { status.textContent = 'downloading content '+(loaded/1048576).toFixed(1)+'/'+(total/1048576).toFixed(1)+'mb'; }
    })).url;
   }
