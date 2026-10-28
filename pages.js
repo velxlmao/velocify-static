@@ -69,6 +69,11 @@
 
 	// ---- catalogues ----
 	const GAMES = [
+		{ name: "Raft", url: "games/raft/index.html", img: "games/raft.jpg", local: true, download: true },
+		{ name: "Slime Rancher", url: "games/slime-rancher/index.html", img: "games/slime-rancher.jpg", local: true, download: true },
+		{ name: "Baldi’s Basics Plus", url: "games/baldi-plus/index.html", img: "games/baldi-plus.jpg", local: true, download: true },
+		{ name: "Bendy and the Ink Machine", url: "games/bendy/index.html", img: "games/bendy.jpg", local: true, download: true },
+		{ name: "Amanda the Adventurer", url: "games/amanda-the-adventurer/index.html", img: "games/amanda-the-adventurer.jpg", local: true, download: true },
 		{ name: "Balatro", url: "games/balatro/index.html", img: "games/balatro.jpg", local: true, splash: "load" },
 		{ name: "R.E.P.O.", url: "games/repo/index.html", img: "games/repo.jpg", local: true, download: true },
 		{ name: "WEBFISHING", url: "games/web-fishing/index.html", img: "games/web-fishing.jpg", local: true, download: true },
