@@ -69,6 +69,12 @@
 
 	// ---- catalogues ----
 	const GAMES = [
+		{ name: "Untitled Goose Game", url: "games/untitled-goose-game/index.html", img: "games/untitled-goose-game.jpg", local: true, download: true },
+		{ name: "Totally Accurate Battle Simulator", url: "games/tabs/index.html", img: "games/tabs.jpg", local: true, download: true },
+		{ name: "Clustertruck", url: "games/clustertruck/index.html", img: "games/clustertruck.jpg", local: true, download: true },
+		{ name: "Iron Lung", url: "games/iron-lung/index.html", img: "games/iron-lung.jpg", local: true, download: true },
+		{ name: "Schoolboy Runaway", url: "games/schoolboy-runaway/index.html", img: "games/schoolboy-runaway.jpg", local: true, download: true },
+		{ name: "Tattletail", url: "games/tattletail/index.html", img: "games/tattletail.jpg", local: true, download: true },
 		{ name: "Raft", url: "games/raft/index.html", img: "games/raft.jpg", local: true, download: true },
 		{ name: "Slime Rancher", url: "games/slime-rancher/index.html", img: "games/slime-rancher.jpg", local: true, download: true },
 		{ name: "Baldi’s Basics Plus", url: "games/baldi-plus/index.html", img: "games/baldi-plus.jpg", local: true, download: true },

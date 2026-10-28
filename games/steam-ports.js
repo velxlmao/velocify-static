@@ -85,7 +85,7 @@
    const instance = await createUnityInstance(canvas, window.gamePerformance.unity({
     dataUrl: files.get(prefix + '.data') || files.get(prefix + '.data.gz'),
     codeUrl: files.get(prefix + '.wasm') || files.get(prefix + '.wasm.gz'),
-    frameworkUrl: prefix + '.framework.js', streamingAssetsUrl: base + 'StreamingAssets',
+    frameworkUrl: (port.runtimeBase || '') + prefix + '.framework.js', streamingAssetsUrl: base + 'StreamingAssets',
     companyName: port.title, productName: port.title, productVersion: '1'
    }));
    persist(instance.Module);
