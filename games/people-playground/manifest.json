@@ -46,5 +46,6 @@
         "size": 16957061
       }
     ]
-  }
+  },
+  "runtimeBase": "https://velocify-ports.realdashvr.workers.dev/people-playground/"
 }

@@ -39,5 +39,6 @@
       }
     ]
   },
-  "remote": {}
+  "remote": {},
+  "runtimeBase": "https://velocify-ports.realdashvr.workers.dev/baldi-plus/"
 }
