@@ -18,6 +18,7 @@
 .ai-header { height: 64px; display: flex; align-items: center; gap: var(--sp); padding: var(--sp) calc(var(--sp)*2); border-bottom: 1px solid var(--border); flex-shrink: 0; }
 #ai-title { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; font-size: 14px; font-weight: 600; }
 #ai-history-toggle { display: none; }
+#ai-delete { margin-left: auto; flex-shrink: 0; padding: calc(var(--sp)/2) var(--sp); background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); color: var(--text); }
 .ai-icon { display: grid; place-items: center; width: 36px; height: 36px; background: transparent; border: 1px solid var(--border); border-radius: var(--radius); color: var(--text); flex-shrink: 0; }
 #ai-messages { flex: 1; overflow-y: auto; padding: calc(var(--sp)*2); scroll-behavior: smooth; }
 .ai-empty { height: 100%; display: flex; flex-direction: column; justify-content: center; align-items: center; gap: var(--sp); color: var(--text); }

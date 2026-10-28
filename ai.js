@@ -4,6 +4,7 @@
  const page = $("ai-page"), input = $("ai-input"), messages = $("ai-messages");
  const endpoint = "https://velx-ai.realdashvr.workers.dev/chat";
  let chats = [], activeId = null, pending = null, loading = true, error = "", storageError = "", scheduled = false;
+ const deleted = new Set(), deleting = new Set();
 
  const active = () => chats.find(chat => chat.id === activeId);
  function showError() {
@@ -11,6 +12,7 @@
   $("ai-error").hidden = !$("ai-error").textContent;
  }
  async function persist(chat) {
+  if (deleted.has(chat.id)) return;
   try { await window.velxAIStore.save(chat); }
   catch { storageError = "Chats cannot be saved in this browser."; showError(); }
  }
@@ -84,6 +86,8 @@
  }
  function controls() {
   $("ai-new").disabled = loading;
+  $("ai-delete").disabled = loading || !active() || deleting.has(activeId);
+  $("ai-delete").textContent = deleting.has(activeId) ? "deleting…" : "delete chat";
   input.disabled = loading;
   $("ai-send").disabled = loading || !!pending || !input.value.trim();
   $("ai-stop").hidden = !pending;
@@ -99,6 +103,22 @@
   }
   activeId = chat.id; error = ""; page.classList.remove("history-open"); render(); input.focus();
   return chat;
+ }
+ async function deleteChat() {
+  const chat = active();
+  if (loading || !chat || deleting.has(chat.id) || !confirm('delete this chat? this cannot be undone.')) return;
+  deleting.add(chat.id); deleted.add(chat.id);
+  if (pending?.chatId === chat.id) pending.controller.abort();
+  controls();
+  try {
+   await window.velxAIStore.remove(chat.id);
+   chats = chats.filter(item => item.id !== chat.id);
+   if (activeId === chat.id) activeId = [...chats].sort((a, b) => b.updated - a.updated)[0]?.id || null;
+   error = "";
+  } catch {
+   deleted.delete(chat.id);
+   error = "Chat could not be deleted. Try again.";
+  } finally { deleting.delete(chat.id); render(); }
  }
  function updateReply(chat, reply) {
   if (scheduled) return;
@@ -174,6 +194,7 @@
  input.addEventListener("input", () => { input.style.height = "auto"; input.style.height = Math.min(input.scrollHeight, 180) + "px"; controls(); });
  input.addEventListener("keydown", event => { if (event.key === "Enter" && !event.shiftKey && !event.isComposing) { event.preventDefault(); send(); } });
  $("ai-new").addEventListener("click", newChat);
+ $("ai-delete").addEventListener("click", deleteChat);
  $("ai-stop").addEventListener("click", () => pending?.controller.abort());
  $("ai-retry").addEventListener("click", () => send(true));
  $("ai-history-toggle").addEventListener("click", () => { const expanded = page.classList.toggle("history-open"); $("ai-history-toggle").setAttribute("aria-expanded", String(expanded)); });

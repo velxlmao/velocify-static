@@ -28,5 +28,15 @@ window.velxAIStore = (() => {
    transaction.onabort = () => reject(transaction.error || new Error("Chat was not saved."));
   });
  }
- return { list, save };
+ async function remove(id) {
+  const db = await open();
+  return new Promise((resolve, reject) => {
+   const transaction = db.transaction("chats", "readwrite");
+   transaction.objectStore("chats").delete(id);
+   transaction.oncomplete = () => resolve();
+   transaction.onerror = () => reject(transaction.error);
+   transaction.onabort = () => reject(transaction.error || new Error("Chat was not deleted."));
+  });
+ }
+ return { list, save, remove };
 })();
