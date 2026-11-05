@@ -15,3 +15,5 @@ body.site-banned { overflow: hidden; }
 @keyframes ban-float { 50% { transform: translateY(-10px); } }
 @keyframes ban-color { to { background-position: 200% 0; } }
 @media(prefers-reduced-motion: reduce) { .ban-overlay p { animation: none; } }
+
+.ban-emoji { display: inline-block; background: none; color: var(--text); -webkit-text-fill-color: initial; }
