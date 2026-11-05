@@ -12,7 +12,7 @@
   else showNext();
  }
  function showNext() {
-  if (!welcomed || popup.open || !queue.length || document.hidden || !document.getElementById('startup').hidden || document.querySelector('dialog[open]')) return;
+  if (document.body.classList.contains('site-banned') || !welcomed || popup.open || !queue.length || document.hidden || !document.getElementById('startup').hidden || document.querySelector('dialog[open]')) return;
   try { for (const id of JSON.parse(localStorage.getItem('velx-announcements-seen') || '[]')) seen.add(id); } catch {}
   while (queue.length && seen.has(queue[0].id)) queue.shift();
   if (!queue.length) return;
@@ -40,6 +40,7 @@
   for (let i = queue.length - 1; i >= 0; i--) if (seen.has(queue[i].id)) queue.splice(i, 1);
  });
  window.addEventListener('velx-chat-notification', event => {
+  if (document.body.classList.contains('site-banned') || document.getElementById('chat-page').classList.contains('chat-banned')) return;
   const message = event.detail, toast = document.createElement('article'), open = document.createElement('button'), close = document.createElement('button');
   const author = document.createElement('strong'), body = document.createElement('span');
   author.textContent = message.name; body.textContent = message.text;

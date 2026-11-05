@@ -54,6 +54,7 @@
 		<link rel="stylesheet" href="index.css?v=102cd83a3e38" />
 		<link rel="stylesheet" href="chat.css?v=a744ed4a43f9" />
 		<link rel="stylesheet" href="notifications.css?v=098898adf749" />
+		<link rel="stylesheet" href="bans.css?v=aa1fe8c59507" />
 		<link rel="stylesheet" href="welcome.css?v=432e092e1fb0" />
 		<link rel="stylesheet" href="design.css?v=1eda7f3867fc" />
 		<link rel="stylesheet" href="decoy.css" />
@@ -67,17 +68,25 @@
 		<script src="decoy.js?v=e2b29f7924f6" defer></script>
 		<script src="cloak.js?v=617ed136374f" defer></script>
 		<script src="pages.js?v=08a24dc2dfed" defer></script>
-		<script src="notifications.js?v=c8b6238c599b" defer></script>
-		<script src="chat.js?v=d39799d1c391" defer></script>
-		<script src="welcome.js?v=2c146f3ae191" defer></script>
+		<script src="notifications.js?v=fa9303fe3bb9" defer></script>
+		<script src="bans.js?v=0ff298605fa0" defer></script>
+		<script src="chat.js?v=9c7c21c61a98" defer></script>
+		<script src="welcome.js?v=66b0f54ab1d6" defer></script>
 	</head>
 
 	<body>
+<div id="site-ban" class="ban-overlay" hidden role="alert" tabindex="-1"><p>you have been banned from using velocify by the site owner, what could you have done? 😭😭</p></div>
 <div id="chat-notifications" aria-live="polite" aria-relevant="additions"></div>
 <button id="moderation-tab" hidden aria-label="moderation actions" title="moderation actions"><svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2"><path d="m14 3 7 7-4 4-7-7zM12 12 3 21M3 17l4 4M8 5l3-3m8 10 3-3"/></svg></button>
 <dialog id="moderation-panel" aria-labelledby="moderation-title">
  <h2 id="moderation-title">moderation actions</h2>
  <button id="announcement-action" type="button">announcement</button>
+ <button id="ban-action" type="button">ban</button>
+ <section id="ban-panel" hidden aria-label="browser bans">
+  <h3>browsers</h3><p class="chat-note">browser profiles recorded from this update onward. names are unverified.</p>
+  <button id="ban-refresh" type="button">refresh</button><p id="ban-error" role="alert" hidden></p>
+  <div id="ban-visitors" aria-live="polite"></div><button id="ban-more" type="button" hidden>load more</button>
+ </section>
  <form id="announcement-form" hidden>
   <label for="announcement-title">title</label><input id="announcement-title" maxlength="100" required />
   <label for="announcement-body">body</label><textarea id="announcement-body" maxlength="2000" rows="6" required></textarea>
@@ -235,6 +244,7 @@
 
 
 <section id="chat-page" class="fullpage" hidden>
+ <div id="chat-ban" class="ban-overlay" hidden role="alert" tabindex="-1"><p>you have been banned from global chat by the website owner</p></div>
 	<header class="page-head chat-head"><button class="page-back" data-close="1" aria-label="back">&#8592;</button><h1 class="page-title">public chat</h1><p id="chat-status" role="status">disconnected</p>
  <div class="chat-header-controls"><form id="chat-name-form"><label for="chat-name">your name</label><input id="chat-name" maxlength="24" required autocomplete="nickname" placeholder="display name"><span id="chat-password-wrap" hidden><label for="chat-password">owner password</label><input id="chat-password" type="password" maxlength="128" autocomplete="current-password" placeholder="owner password"></span><button type="submit">set name</button></form><div id="chat-owner-tools" hidden><button id="chat-clear" type="button">clear chat</button><label for="chat-expiry">auto-delete</label><select id="chat-expiry"><option value="0">off</option><option value="60">1 minute</option><option value="300">5 minutes</option><option value="900">15 minutes</option><option value="1800">30 minutes</option><option value="3600">1 hour</option><option value="86400">24 hours</option><option value="604800">7 days</option></select><span class="chat-note">timer applies to existing and new messages</span></div></div>
  <div class="chat-header-notes"><p class="chat-note">messages are public. display names are unverified. last 100 messages are saved.</p><p id="chat-retention" class="chat-note" role="status">auto-delete is off</p></div>

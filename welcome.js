@@ -5,7 +5,7 @@
  async function open() {
   if (await window.startupReady === false) return;
   await new Promise(resolve => requestAnimationFrame(() => requestAnimationFrame(resolve)));
-  setTimeout(() => dialog.showModal(), reduced.matches ? 0 : 450);
+  setTimeout(() => { if (!document.body.classList.contains('site-banned')) dialog.showModal(); }, reduced.matches ? 0 : 450);
  }
  dialog.addEventListener('pointermove', event => {
   if (reduced.matches || event.pointerType === 'touch') return;

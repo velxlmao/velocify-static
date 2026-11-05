@@ -2,7 +2,10 @@
 (() => {
  const $ = id => document.getElementById(id);
  const list = $('chat-messages'), input = $('chat-input'), name = $('chat-name');
- let suspended = false, started = false;
+ let suspended = false, started = false, registered = false, banned = false;
+ let browserToken;
+ try { browserToken = localStorage.getItem('velocify-browser-token'); } catch {}
+ if (!browserToken || !/^[a-zA-Z0-9-]{64,128}$/.test(browserToken)) { browserToken = crypto.randomUUID() + crypto.randomUUID(); try { localStorage.setItem('velocify-browser-token', browserToken); } catch {} }
  let socket, reconnect, retry = 0, ownId = '', visible = false, ready = false, pending = '', sentAt = 0;
  let owner = false, ttlSeconds = 0, clockOffset = 0, moderating = false, moderationTimer;
  const messages = new Map();
@@ -17,8 +20,8 @@
  name.addEventListener('input', passwordPrompt);
  function error(text = '') { $('chat-error').textContent = text; $('chat-error').hidden = !text; }
  function controls() {
-  $('chat-send').disabled = !ready || !!pending || !input.value.trim();
-  input.disabled = !ready;
+  $('chat-send').disabled = banned || !ready || !!pending || !input.value.trim();
+  input.disabled = banned || !ready;
   $('chat-owner-tools').hidden = !ready || !owner;
   window.dispatchEvent(new CustomEvent('velx-owner-state', { detail: ready && owner }));
   $('chat-clear').disabled = moderating || !messages.size;
@@ -81,10 +84,18 @@
   socket = new WebSocket('wss://velocify-public-chat.realdashvr.workers.dev/connect');
   const connection = socket;
   controls();
-  socket.onopen = () => { retry = 0; if (name.value.trim() && (name.value.trim().toLowerCase() !== 'velx' || $('chat-password').value)) setName(); controls(); };
+  socket.onopen = () => { retry = 0; registered = false; try { const saved = localStorage.getItem('velocify-browser-token'); if (saved && /^[a-zA-Z0-9-]{64,128}$/.test(saved)) browserToken = saved; } catch {} socket.send(JSON.stringify({ type: 'hello', token: browserToken })); controls(); };
   socket.onmessage = event => {
    try {
     const data = JSON.parse(event.data);
+    if (data.type === 'ban-state') {
+     const first = !registered; registered = true; banned = data.chatBanned || data.siteBanned;
+     window.dispatchEvent(new CustomEvent('velx-ban-state', { detail: data }));
+     if (banned) { pending = ''; messages.clear(); render(); }
+     if (first && !banned && name.value.trim() && (name.value.trim().toLowerCase() !== 'velx' || $('chat-password').value)) setName();
+     controls();
+    }
+    if (data.type === 'visitors' || data.type === 'ban-updated') window.dispatchEvent(new CustomEvent('velx-ban-response', { detail: data }));
     if (data.type === 'history') {
      window.dispatchEvent(new CustomEvent('velx-announcements', { detail: data.announcements || [] }));
      messages.clear(); for (const message of data.messages) messages.set(message.id, message);
@@ -102,12 +113,13 @@
      render(); controls();
     }
     if (data.type === 'error') {
+     window.dispatchEvent(new CustomEvent('velx-ban-error', { detail: data.error }));
      window.dispatchEvent(new CustomEvent('velx-announcement-error', { detail: data.error })); pending = ''; finishedModeration(); retention(); error(data.error); controls(); }
    } catch { error('Could not read a chat update.'); }
   };
   socket.onclose = () => {
    if (socket !== connection) return;
-   ready = false; owner = false; finishedModeration(); render();
+   registered = false; ready = false; owner = false; finishedModeration(); render();
    if (pending) { pending = ''; error('Connection lost. Your message is still in the box.'); }
    controls();
    if (!suspended) { reconnect = setTimeout(connect, Math.min(30000, 1000 * 2 ** retry++)); }
@@ -118,7 +130,7 @@
   const value = name.value.trim();
   if (!value || value.length > 24) { error('Choose a name between 1 and 24 characters.'); return; }
   try { localStorage.setItem('velocify-chat-name', value); } catch {}
-  if (socket?.readyState === WebSocket.OPEN) { ready = false; owner = false; render(); socket.send(JSON.stringify({ type: 'name', name: value, password: value.toLowerCase() === 'velx' ? $('chat-password').value : undefined })); controls(); }
+  if (registered && !banned && socket?.readyState === WebSocket.OPEN) { ready = false; owner = false; render(); socket.send(JSON.stringify({ type: 'name', name: value, password: value.toLowerCase() === 'velx' ? $('chat-password').value : undefined })); controls(); }
   else connect();
  }
  $('chat-name-form').addEventListener('submit', event => { event.preventDefault(); setName(); });
@@ -143,6 +155,11 @@
   if (!ready || !owner || socket?.readyState !== WebSocket.OPEN) { window.dispatchEvent(new CustomEvent('velx-announcement-error', { detail: 'Sign in as owner to send announcements.' })); return; }
   try { socket.send(JSON.stringify({ type: 'announcement', title: event.detail.title, body: event.detail.body })); }
   catch { window.dispatchEvent(new CustomEvent('velx-announcement-error', { detail: 'Connection lost. Reconnect before sending.' })); }
+ });
+ window.addEventListener('velx-ban-command', event => {
+  if (!ready || !owner || !registered || socket?.readyState !== WebSocket.OPEN) { window.dispatchEvent(new CustomEvent('velx-ban-error', { detail: 'Sign in as owner first.' })); return; }
+  try { socket.send(JSON.stringify(event.detail)); }
+  catch { window.dispatchEvent(new CustomEvent('velx-ban-error', { detail: 'Connection lost. Reconnect and refresh.' })); }
  });
  window.addEventListener('pagehide', () => { suspended = true; visible = false; clearTimeout(reconnect); socket?.close(1000); });
  render(); controls();
