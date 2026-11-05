@@ -1,0 +1,17 @@
+#welcome { margin: auto; width: min(460px, calc(100% - 28px)); max-height: calc(100% - 28px); overflow: auto; padding: calc(var(--sp) * 2); border: 1px solid var(--border); border-radius: calc(var(--radius) * 2); background: var(--surface); color: var(--text); text-align: center; font: inherit; }
+#welcome[open] { animation: welcome-in .35s var(--ease) both; }
+#welcome::backdrop { background: var(--bg); opacity: .85; }
+#welcome img { border-radius: 50%; object-fit: cover; margin-bottom: var(--sp); }
+#welcome h2 { font-size: 22px; font-weight: 600; }
+#welcome p { margin-top: var(--sp); line-height: 1.6; }
+#welcome .welcome-handle { margin-top: 0; color: var(--muted); font-size: 14px; }
+#welcome button { margin-top: calc(var(--sp) * 2); padding: var(--sp) calc(var(--sp) * 2); background: var(--accent); color: var(--bg); border: 1px solid var(--accent); border-radius: var(--radius); font: inherit; cursor: pointer; transition: transform .2s, opacity .2s; }
+#welcome button:hover { transform: translateY(-2px); }
+#welcome button:focus-visible { outline: 2px solid var(--text); outline-offset: 4px; }
+#welcome button:disabled { opacity: .5; cursor: wait; }
+#welcome .welcome-admin { color: var(--muted); font-size: 11px; }
+.nav-btn, .tile { transition: transform .2s var(--ease), border-color .2s, background .2s; }
+.tile:hover { transform: translateY(-4px); }
+.chat-message { animation: welcome-in .2s var(--ease) both; }
+@keyframes welcome-in { from { opacity: 0; transform: translateY(14px) scale(.98); } to { opacity: 1; transform: none; } }
+@media (prefers-reduced-motion: reduce) { #welcome[open], .chat-message { animation: none; } .nav-btn, .tile, #welcome button { transition: none; } .tile:hover, #welcome button:hover { transform: none; } }

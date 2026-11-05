@@ -3,13 +3,11 @@
 	const pages = {
 		games: document.getElementById("games-page"),
 		apps: document.getElementById("apps-page"),
-		ai: document.getElementById("ai-page"),
 		chat: document.getElementById("chat-page"),
 	};
 	const navs = {
 		games: document.getElementById("nav-games"),
 		apps: document.getElementById("nav-apps"),
-		ai: document.getElementById("nav-ai"),
 		chat: document.getElementById("nav-chat"),
 	};
 	const home = document.getElementById("home");
@@ -50,7 +48,6 @@
 			el.classList.add("open");
 			navs[name].classList.add("active");
 			current = name;
-			if (name === "ai") window.dispatchEvent(new Event("velx-ai-open"));
 			if (name === "chat") window.dispatchEvent(new Event("velx-chat-open"));
 		};
 		if (current) hide(pages[current], navs[current], show);
@@ -406,7 +403,6 @@
 	document.getElementById("game-search").addEventListener("input", () => renderTiles(pages.games, GAMES));
 	navs.games.addEventListener("click", () => openPage("games"));
 	navs.apps.addEventListener("click", () => openPage("apps"));
-	navs.ai.addEventListener("click", () => openPage("ai"));
 	navs.chat.addEventListener("click", () => openPage("chat"));
 	navHome.addEventListener("click", () => closeCurrent());
 
