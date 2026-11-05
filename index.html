@@ -53,6 +53,7 @@
 
 		<link rel="stylesheet" href="index.css?v=102cd83a3e38" />
 		<link rel="stylesheet" href="chat.css?v=a744ed4a43f9" />
+		<link rel="stylesheet" href="notifications.css?v=098898adf749" />
 		<link rel="stylesheet" href="welcome.css?v=432e092e1fb0" />
 		<link rel="stylesheet" href="decoy.css" />
 		<script src="register-sw.js?v=e4164d073878" defer></script>
@@ -65,11 +66,30 @@
 		<script src="decoy.js?v=e2b29f7924f6" defer></script>
 		<script src="cloak.js?v=617ed136374f" defer></script>
 		<script src="pages.js?v=c9d990fd12df" defer></script>
-		<script src="chat.js?v=e0dafb72937f" defer></script>
+		<script src="notifications.js?v=a4f52c2452dd" defer></script>
+		<script src="chat.js?v=d39799d1c391" defer></script>
 		<script src="welcome.js?v=2c146f3ae191" defer></script>
 	</head>
 
 	<body>
+<div id="chat-notifications" aria-live="polite" aria-relevant="additions"></div>
+<button id="moderation-tab" hidden aria-label="moderation actions" title="moderation actions"><svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2"><path d="m14 3 7 7-4 4-7-7zM12 12 3 21M3 17l4 4M8 5l3-3m8 10 3-3"/></svg></button>
+<dialog id="moderation-panel" aria-labelledby="moderation-title">
+ <h2 id="moderation-title">moderation actions</h2>
+ <button id="announcement-action" type="button">announcement</button>
+ <form id="announcement-form" hidden>
+  <label for="announcement-title">title</label><input id="announcement-title" maxlength="100" required />
+  <label for="announcement-body">body</label><textarea id="announcement-body" maxlength="2000" rows="6" required></textarea>
+  <p id="announcement-error" role="alert" hidden></p>
+  <button id="announcement-send" type="submit">send announcement</button>
+ </form>
+ <form method="dialog"><button>close</button></form>
+</dialog>
+<dialog id="announcement-window" aria-labelledby="announcement-heading" aria-describedby="announcement-content">
+ <p class="announcement-important">!!! IMPORTANT ANOUNCEMENT !!!</p>
+ <h2 id="announcement-heading"></h2><p id="announcement-content"></p>
+ <form method="dialog"><button autofocus>dismiss</button></form>
+</dialog>
 <dialog id="welcome" aria-labelledby="welcome-title" aria-describedby="welcome-help">
  <header class="welcome-profile">
   <img src="creator.png" alt="velx profile image" width="88" height="88" />
