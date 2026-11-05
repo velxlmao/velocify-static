@@ -8,14 +8,22 @@
  let seen = new Set();
  try { seen = new Set(JSON.parse(localStorage.getItem('velx-announcements-seen') || '[]')); } catch {}
  function pump() {
+  if (globalThis.navigator?.locks) navigator.locks.request('velx-announcement-display', showNext).catch(() => {});
+  else showNext();
+ }
+ function showNext() {
   if (!welcomed || popup.open || !queue.length || document.hidden || !document.getElementById('startup').hidden || document.querySelector('dialog[open]')) return;
+  try { for (const id of JSON.parse(localStorage.getItem('velx-announcements-seen') || '[]')) seen.add(id); } catch {}
+  while (queue.length && seen.has(queue[0].id)) queue.shift();
+  if (!queue.length) return;
   current = queue.shift();
   $('announcement-heading').textContent = current.title;
   $('announcement-content').textContent = current.body;
   popup.showModal();
+  seen.add(current.id);
+  try { localStorage.setItem('velx-announcements-seen', JSON.stringify([...seen].slice(-200))); } catch {}
  }
  popup.addEventListener('close', () => {
-  if (current) { seen.add(current.id); try { localStorage.setItem('velx-announcements-seen', JSON.stringify([...seen].slice(-200))); } catch {} }
   current = null;
   pump();
  });
