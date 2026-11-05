@@ -2,17 +2,18 @@
 (() => {
 	const canvas = document.getElementById("rain");
 	if (!canvas) return;
-	if (/CrOS/.test(navigator.userAgent || "") || navigator.deviceMemory <= 4 || navigator.hardwareConcurrency <= 4 || matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+	if (matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+ const lowPower = /CrOS/.test(navigator.userAgent || "") || navigator.deviceMemory <= 4 || navigator.hardwareConcurrency <= 4;
 	const ctx = canvas.getContext("2d");
 	if (!ctx) return;
 	const visible = () => !document.hidden && !document.body.classList.contains("view-mode") && !document.querySelector(".fullpage.open");
 
-	let w, h, drops;
+	let w, h, drops, lastFrame = 0;
 
 	function reset() {
 		w = canvas.width = Math.min(window.innerWidth, 1280);
 		h = canvas.height = Math.round(window.innerHeight * w / window.innerWidth);
-		const count = Math.round((w * h) / 9000);
+		const count = Math.min(lowPower ? 220 : 500, Math.round((w * h) / (lowPower ? 4500 : 2800)));
 		drops = new Array(count).fill(0).map(spawn);
 	}
 
@@ -22,23 +23,27 @@
 			y: Math.random() * h,
 			len: 8 + Math.random() * 16,
 			speed: 1 + Math.random() * 2.2,
-			alpha: 0.08 + Math.random() * 0.22,
+			alpha: 0.22 + Math.random() * 0.35,
 		};
 	}
 
-	function frame() {
+	function frame(now = 0) {
 		if (!visible()) { setTimeout(frame, 200); return; }
-		ctx.clearRect(0, 0, w, h);
+		if (now && now - lastFrame < 33) { requestAnimationFrame(frame); return; }
+  const elapsed = lastFrame && now ? Math.min(2, (now - lastFrame) / 33) : 1;
+  lastFrame = now;
+  ctx.clearRect(0, 0, w, h);
+  ctx.strokeStyle = getComputedStyle(canvas).getPropertyValue('--accent').trim();
 		ctx.lineWidth = 1;
 		for (const d of drops) {
-			ctx.strokeStyle = `rgba(150,170,200,${d.alpha})`;
+			ctx.globalAlpha = d.alpha;
 			ctx.beginPath();
 			ctx.moveTo(d.x, d.y);
 			ctx.lineTo(d.x - 1, d.y + d.len);
 			ctx.stroke();
-			d.y += d.speed;
-			d.x -= 0.15;
-			if (d.y > h) {
+			d.y += d.speed * elapsed;
+			d.x -= 0.15 * elapsed;
+			if (d.y > h || d.x < 0) {
 				d.y = -d.len;
 				d.x = Math.random() * w;
 			}
@@ -50,6 +55,7 @@
 	reset();
 	frame();
 
+	if (lowPower) return;
 	const glow = document.createElement("div");
 	glow.id = "cursor-glow";
 	document.body.appendChild(glow);

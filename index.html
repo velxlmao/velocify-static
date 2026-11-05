@@ -55,14 +55,14 @@
 		<link rel="stylesheet" href="chat.css?v=a744ed4a43f9" />
 		<link rel="stylesheet" href="notifications.css?v=098898adf749" />
 		<link rel="stylesheet" href="welcome.css?v=432e092e1fb0" />
-		<link rel="stylesheet" href="design.css?v=b068f9e9d80f" />
+		<link rel="stylesheet" href="design.css?v=1eda7f3867fc" />
 		<link rel="stylesheet" href="decoy.css" />
 		<script src="register-sw.js?v=e4164d073878" defer></script>
 		<script src="search.js" defer></script>
 		<script src="services.js?v=6aaff7d3ee6a" defer></script>
 		<script src="startup.js?v=d13f50c6837a" defer></script>
 		<script src="index.js?v=c02e7f8eb86b" defer></script>
-		<script src="rain.js?v=6519da03c10b" defer></script>
+		<script src="rain.js?v=5627ec9c669d" defer></script>
 		<script src="settings.js?v=d39e6d1472eb" defer></script>
 		<script src="decoy.js?v=e2b29f7924f6" defer></script>
 		<script src="cloak.js?v=617ed136374f" defer></script>
@@ -235,12 +235,15 @@
 
 
 <section id="chat-page" class="fullpage" hidden>
-	<header class="page-head chat-head"><button class="page-back" data-close="1" aria-label="back">&#8592;</button><h1 class="page-title">public chat</h1><p id="chat-status" role="status">disconnected</p></header>
+	<header class="page-head chat-head"><button class="page-back" data-close="1" aria-label="back">&#8592;</button><h1 class="page-title">public chat</h1><p id="chat-status" role="status">disconnected</p>
+ <div class="chat-header-controls"><form id="chat-name-form"><label for="chat-name">your name</label><input id="chat-name" maxlength="24" required autocomplete="nickname" placeholder="display name"><span id="chat-password-wrap" hidden><label for="chat-password">owner password</label><input id="chat-password" type="password" maxlength="128" autocomplete="current-password" placeholder="owner password"></span><button type="submit">set name</button></form><div id="chat-owner-tools" hidden><button id="chat-clear" type="button">clear chat</button><label for="chat-expiry">auto-delete</label><select id="chat-expiry"><option value="0">off</option><option value="60">1 minute</option><option value="300">5 minutes</option><option value="900">15 minutes</option><option value="1800">30 minutes</option><option value="3600">1 hour</option><option value="86400">24 hours</option><option value="604800">7 days</option></select><span class="chat-note">timer applies to existing and new messages</span></div></div>
+ <div class="chat-header-notes"><p class="chat-note">messages are public. display names are unverified. last 100 messages are saved.</p><p id="chat-retention" class="chat-note" role="status">auto-delete is off</p></div>
+ </header>
 	<div class="chat-content">
-		<form id="chat-name-form"><label for="chat-name">your name</label><input id="chat-name" maxlength="24" required autocomplete="nickname" placeholder="display name"><span id="chat-password-wrap" hidden><label for="chat-password">owner password</label><input id="chat-password" type="password" maxlength="128" autocomplete="current-password" placeholder="owner password"></span><button type="submit">set name</button></form>
-		<p class="chat-note">messages are public. display names are unverified. last 100 messages are saved.</p>
-		<div id="chat-owner-tools" hidden><button id="chat-clear" type="button">clear chat</button><label for="chat-expiry">auto-delete</label><select id="chat-expiry"><option value="0">off</option><option value="60">1 minute</option><option value="300">5 minutes</option><option value="900">15 minutes</option><option value="1800">30 minutes</option><option value="3600">1 hour</option><option value="86400">24 hours</option><option value="604800">7 days</option></select><span class="chat-note">timer applies to existing and new messages</span></div>
-		<p id="chat-retention" class="chat-note" role="status">auto-delete is off</p>
+		
+		
+		
+		
 		<div id="chat-messages" role="log" aria-label="public messages" aria-live="polite" aria-relevant="additions"></div>
 		<p id="chat-error" role="alert" hidden></p>
 		<form id="chat-form"><textarea id="chat-input" maxlength="500" rows="2" aria-label="chat message" placeholder="send a message" disabled></textarea><button id="chat-send" type="submit" disabled>send</button></form>
