@@ -10,6 +10,7 @@
  let owner = false, ttlSeconds = 0, clockOffset = 0, moderating = false, moderationTimer;
  const messages = new Map();
  try { name.value = localStorage.getItem('velocify-chat-name') || ''; } catch {}
+ function send(data) { socket.send(JSON.stringify({ ...data, token: browserToken })); }
  function passwordPrompt() {
   const owner = name.value.trim().toLowerCase() === 'velx';
   $('chat-password-wrap').hidden = !owner;
@@ -74,7 +75,7 @@
   if (!ready || !owner || moderating || socket?.readyState !== WebSocket.OPEN) return;
   moderating = true; error(); controls();
   try {
-   socket.send(JSON.stringify(data));
+   send(data);
    moderationTimer = setTimeout(() => { finishedModeration(); error('Chat update was not confirmed. Reconnect and check before retrying.'); }, 10000);
   } catch { finishedModeration(); error('Could not update chat. Reconnect and try again.'); }
  }
@@ -84,10 +85,11 @@
   socket = new WebSocket('wss://velocify-public-chat.realdashvr.workers.dev/connect');
   const connection = socket;
   controls();
-  socket.onopen = () => { retry = 0; registered = false; try { const saved = localStorage.getItem('velocify-browser-token'); if (saved && /^[a-zA-Z0-9-]{64,128}$/.test(saved)) browserToken = saved; } catch {} socket.send(JSON.stringify({ type: 'hello', token: browserToken })); controls(); };
+  socket.onopen = () => { retry = 0; registered = false; try { const saved = localStorage.getItem('velocify-browser-token'); if (saved && /^[a-zA-Z0-9-]{64,128}$/.test(saved)) browserToken = saved; } catch {} send({ type: 'hello' }); controls(); };
   socket.onmessage = event => {
    try {
     const data = JSON.parse(event.data);
+    if (data.type === 'registration-required') { registered = false; send({ type: 'hello' }); return; }
     if (data.type === 'ban-state') {
      const first = !registered; registered = true; banned = data.chatBanned || data.siteBanned;
      window.dispatchEvent(new CustomEvent('velx-ban-state', { detail: data }));
@@ -130,7 +132,7 @@
   const value = name.value.trim();
   if (!value || value.length > 24) { error('Choose a name between 1 and 24 characters.'); return; }
   try { localStorage.setItem('velocify-chat-name', value); } catch {}
-  if (registered && !banned && socket?.readyState === WebSocket.OPEN) { ready = false; owner = false; render(); socket.send(JSON.stringify({ type: 'name', name: value, password: value.toLowerCase() === 'velx' ? $('chat-password').value : undefined })); controls(); }
+  if (registered && !banned && socket?.readyState === WebSocket.OPEN) { ready = false; owner = false; render(); send({ type: 'name', name: value, password: value.toLowerCase() === 'velx' ? $('chat-password').value : undefined }); controls(); }
   else connect();
  }
  $('chat-name-form').addEventListener('submit', event => { event.preventDefault(); setName(); });
@@ -139,7 +141,7 @@
   if (!ready || pending || !input.value.trim()) return;
   if (Date.now() - sentAt < 1500) { error('Wait a moment before sending again.'); return; }
   pending = input.value.trim(); sentAt = Date.now();
-  try { socket.send(JSON.stringify({ type: 'message', text: pending })); controls(); }
+  try { send({ type: 'message', text: pending }); controls(); }
   catch { pending = ''; error('Message not sent. Reconnect and try again.'); controls(); }
  });
  input.addEventListener('input', controls);
@@ -153,12 +155,12 @@
  window.addEventListener('pageshow', () => { suspended = false; connect(); });
  window.addEventListener('velx-send-announcement', event => {
   if (!ready || !owner || socket?.readyState !== WebSocket.OPEN) { window.dispatchEvent(new CustomEvent('velx-announcement-error', { detail: 'Sign in as owner to send announcements.' })); return; }
-  try { socket.send(JSON.stringify({ type: 'announcement', title: event.detail.title, body: event.detail.body })); }
+  try { send({ type: 'announcement', title: event.detail.title, body: event.detail.body }); }
   catch { window.dispatchEvent(new CustomEvent('velx-announcement-error', { detail: 'Connection lost. Reconnect before sending.' })); }
  });
  window.addEventListener('velx-ban-command', event => {
   if (!ready || !owner || !registered || socket?.readyState !== WebSocket.OPEN) { window.dispatchEvent(new CustomEvent('velx-ban-error', { detail: 'Sign in as owner first.' })); return; }
-  try { socket.send(JSON.stringify(event.detail)); }
+  try { send(event.detail); }
   catch { window.dispatchEvent(new CustomEvent('velx-ban-error', { detail: 'Connection lost. Reconnect and refresh.' })); }
  });
  window.addEventListener('pagehide', () => { suspended = true; visible = false; clearTimeout(reconnect); socket?.close(1000); });
