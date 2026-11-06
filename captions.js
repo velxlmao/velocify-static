@@ -25,7 +25,13 @@
  let index = 0;
  setInterval(() => {
   if (document.hidden) return;
-  index = (index + 1) % lines.length;
-  for (const caption of captions) render(caption, lines[index]);
+  for (const caption of captions) caption.classList.add('caption-changing');
+  setTimeout(() => {
+   index = (index + 1) % lines.length;
+   for (const caption of captions) {
+    render(caption, lines[index]);
+    caption.classList.remove('caption-changing');
+   }
+  }, 300);
  }, 2000);
 })();
