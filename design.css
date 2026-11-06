@@ -94,7 +94,7 @@ body.view-mode #sidebar.peek { transform: none; }
  .chat-content { padding: 0 var(--sp) var(--sp); }
 }
 
-.rotating-caption { opacity: .55; font-size: 13px; line-height: 1.5; text-align: center; min-height: 20px; max-width: min(90vw, 500px); font-weight: 400; transition: opacity .3s ease-in-out; animation: caption-wobble 4s ease-in-out infinite; }
+.rotating-caption { opacity: .55; font-size: 15px; line-height: 1.5; text-align: center; min-height: 24px; max-width: min(90vw, 500px); font-weight: 400; transition: opacity .3s ease-in-out; animation: caption-wobble 4s ease-in-out infinite; }
 #home .rotating-caption { margin-top: calc(var(--sp) * -1); }
 .gl-splash .rotating-caption { margin-top: calc(var(--sp) * -1); }
 @media (prefers-reduced-motion: reduce) { .rotating-caption { animation: none; } }
