@@ -14,10 +14,18 @@
   'goguardian more like noguardian 😭🙏'
  ];
  const captions = document.querySelectorAll('.rotating-caption');
+ function render(caption, line) {
+  const split = line.search(/\p{Extended_Pictographic}/u);
+  const copy = document.createElement('span'), emoji = document.createElement('span');
+  copy.className = 'caption-copy'; emoji.className = 'caption-emoji';
+  copy.textContent = split < 0 ? line : line.slice(0, split);
+  emoji.textContent = split < 0 ? '' : line.slice(split);
+  caption.replaceChildren(copy, emoji);
+ }
  let index = 0;
  setInterval(() => {
   if (document.hidden) return;
   index = (index + 1) % lines.length;
-  for (const caption of captions) caption.textContent = lines[index];
+  for (const caption of captions) render(caption, lines[index]);
  }, 2000);
 })();

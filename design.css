@@ -56,9 +56,6 @@ button:disabled { cursor: not-allowed; opacity: .5; }
 #chat-page #chat-send { min-height: 56px; color: var(--accent); }
 #chat-status { font-size: 12px; }
 #moderation-tab { border-radius: var(--radius) 0 0 var(--radius); }
-.gl-wordmark { background: none; color: var(--accent); -webkit-text-fill-color: var(--accent); filter: none; animation: none; font-weight: 600; }
-.gl-glow { display: none; }
-.gl-splash { animation: none; }
 body.view-mode #sidebar { transform: translateX(calc(-100% - var(--sp))); }
 body.view-mode #sidebar.peek { transform: none; }
 @media (max-width: 640px) {
@@ -97,8 +94,15 @@ body.view-mode #sidebar.peek { transform: none; }
  .chat-content { padding: 0 var(--sp) var(--sp); }
 }
 
-.rotating-caption { color: var(--muted); opacity: .65; font-size: 12px; line-height: 1.5; text-align: center; min-height: 18px; max-width: min(90vw, 500px); font-weight: 400; animation: caption-cycle 2s ease-in-out infinite; }
+.rotating-caption { opacity: .55; font-size: 13px; line-height: 1.5; text-align: center; min-height: 20px; max-width: min(90vw, 500px); font-weight: 400; animation: caption-cycle 2s ease-in-out infinite, caption-wobble 4s ease-in-out infinite; }
 #home .rotating-caption { margin-top: calc(var(--sp) * -1); }
 .gl-splash .rotating-caption { margin-top: calc(var(--sp) * -1); }
-@keyframes caption-cycle { 0%, 100% { opacity: .25; } 12%, 88% { opacity: .65; } }
+@keyframes caption-cycle { 0%, 100% { opacity: 0; } 15%, 80% { opacity: .55; } }
 @media (prefers-reduced-motion: reduce) { .rotating-caption { animation: none; } }
+
+.caption-copy { background: linear-gradient(100deg, var(--accent), var(--text), var(--accent)); background-size: 200% 100%; background-clip: text; -webkit-background-clip: text; color: transparent; -webkit-text-fill-color: transparent; animation: glshine 5s linear infinite; }
+.caption-emoji { color: var(--text); -webkit-text-fill-color: initial; }
+@keyframes caption-wobble { 0%, 100% { transform: translateY(0) rotate(-1deg); } 50% { transform: translateY(-4px) rotate(1deg); } }
+#startup .gl-wordmark, #loader .gl-wordmark { font-size: clamp(2.6rem, 11vw, 5.2rem); font-weight: 800; animation: glshine 2.4s linear infinite; }
+#loader > .rotating-caption { margin-top: calc(var(--sp) * -1); }
+@media (prefers-reduced-motion: reduce) { .rotating-caption, .caption-copy { animation: none; } .rotating-caption { opacity: .55; } }
