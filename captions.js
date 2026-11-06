@@ -1,18 +1,18 @@
 "use strict";
 (() => {
  const lines = [
-  'velocify on top 😭🙏',
-  'if you have this hi ms emond ✌️',
-  'check out xyfer aswell 🙏',
-  'velocify tops aether 🥀',
-  'velx says hi ✌️',
-  'evil velx 4000 😭🥀',
-  '😭😭🥀🥀✌️',
-  'monkey monkey monkey 🥀',
-  'larping is fun 😭🙏',
-  'linewize sucks 🥀✌️',
-  'goguardian more like noguardian 😭🙏'
- ];
+  "velocify on top",
+  "check out public chat!",
+  "check out xyfer aswell",
+  "velocify tops aether",
+  "velx says hi",
+  "evil velx 4000",
+  "😭😭🥀🥀✌️",
+  "monkey monkey monkey",
+  "@velocitylx",
+  "linewize sucks",
+  "goguardian more like noguardian 😭🙏"
+];
  const captions = document.querySelectorAll('.rotating-caption');
  function render(caption, line) {
   const split = line.search(/\p{Extended_Pictographic}/u);
