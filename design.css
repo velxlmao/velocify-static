@@ -96,3 +96,9 @@ body.view-mode #sidebar.peek { transform: none; }
  #chat-page #chat-password { flex: 1; min-width: 80px; }
  .chat-content { padding: 0 var(--sp) var(--sp); }
 }
+
+.rotating-caption { color: var(--muted); opacity: .65; font-size: 12px; line-height: 1.5; text-align: center; min-height: 18px; max-width: min(90vw, 500px); font-weight: 400; animation: caption-cycle 2s ease-in-out infinite; }
+#home .rotating-caption { margin-top: calc(var(--sp) * -1); }
+.gl-splash .rotating-caption { margin-top: calc(var(--sp) * -1); }
+@keyframes caption-cycle { 0%, 100% { opacity: .25; } 12%, 88% { opacity: .65; } }
+@media (prefers-reduced-motion: reduce) { .rotating-caption { animation: none; } }
