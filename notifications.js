@@ -4,7 +4,7 @@
  const panel = $('moderation-panel'), popup = $('announcement-window'), queue = [];
  let welcomed = !document.getElementById('welcome');
  document.getElementById('welcome')?.addEventListener('close', () => { welcomed = true; pump(); });
- let owner = false, sending = false, timeout, current;
+ let owner = false, sending = false, timeout, current, active, expiryTimer;
  let seen = new Set();
  try { seen = new Set(JSON.parse(localStorage.getItem('velx-announcements-seen') || '[]')); } catch {}
  function pump() {
@@ -14,7 +14,7 @@
  function showNext() {
   if (document.body.classList.contains('site-banned') || !welcomed || popup.open || !queue.length || document.hidden || !document.getElementById('startup').hidden || document.querySelector('dialog[open]')) return;
   try { for (const id of JSON.parse(localStorage.getItem('velx-announcements-seen') || '[]')) seen.add(id); } catch {}
-  while (queue.length && seen.has(queue[0].id)) queue.shift();
+  while (queue.length && (seen.has(queue[0].id) || queue[0].expiresAt <= Date.now())) queue.shift();
   if (!queue.length) return;
   current = queue.shift();
   $('announcement-heading').textContent = current.title;
@@ -28,7 +28,14 @@
   pump();
  });
  window.addEventListener('velx-announcements', event => {
-  for (const item of event.detail) if (item && typeof item.id === 'string' && typeof item.title === 'string' && typeof item.body === 'string' && !seen.has(item.id) && current?.id !== item.id && !queue.some(queued => queued.id === item.id)) queue.push(item);
+  const item = event.detail.at(-1);
+  active = item && typeof item.id === 'string' && typeof item.title === 'string' && typeof item.body === 'string' && Number.isFinite(item.expiresAt) && item.expiresAt > Date.now() ? item : null;
+  queue.splice(0);
+  if (current && current.id !== active?.id) { current = null; if (popup.open) popup.close(); }
+  if (active && !seen.has(active.id) && current?.id !== active.id) queue.push(active);
+  clearTimeout(expiryTimer);
+  if (active) expiryTimer = setTimeout(() => window.dispatchEvent(new CustomEvent('velx-announcements', { detail: [] })), Math.max(1, active.expiresAt - Date.now()));
+  $('announcement-clear').disabled = !owner || sending || !active;
   pump();
  });
  document.addEventListener('visibilitychange', pump);
@@ -61,11 +68,13 @@
  function finish(error = '') {
   clearTimeout(timeout); sending = false;
   $('announcement-send').disabled = !owner;
+  $('announcement-clear').disabled = !owner || !active;
   $('announcement-send').textContent = 'send announcement';
   $('announcement-error').textContent = error; $('announcement-error').hidden = !error;
  }
  window.addEventListener('velx-owner-state', event => {
   owner = event.detail === true;
+  $('announcement-clear').disabled = !owner || sending || !active;
   $('moderation-tab').hidden = !owner;
   if (!owner) { if (panel.open) panel.close(); if (sending) finish('Owner connection lost.'); }
  });
@@ -77,9 +86,16 @@
   const title = $('announcement-title').value.trim(), body = $('announcement-body').value.trim();
   if (!title || !body) { finish('Enter a title and body.'); return; }
   sending = true; $('announcement-send').disabled = true; $('announcement-send').textContent = 'sending…';
-  $('announcement-error').hidden = true;
+  $('announcement-error').hidden = true; $('announcement-clear').disabled = true;
   timeout = setTimeout(() => finish('Send was not confirmed. Reconnect and check before retrying.'), 10000);
   window.dispatchEvent(new CustomEvent('velx-send-announcement', { detail: { title, body } }));
+ });
+ $('announcement-clear').addEventListener('click', () => {
+  if (!owner || sending || !active) return;
+  sending = true; $('announcement-send').disabled = true; $('announcement-clear').disabled = true;
+  $('announcement-error').hidden = true;
+  timeout = setTimeout(() => finish('Clear was not confirmed. Refresh before retrying.'), 10000);
+  window.dispatchEvent(new Event('velx-clear-announcement'));
  });
  window.addEventListener('velx-announcement-error', event => { if (sending) finish(event.detail); });
  window.addEventListener('velx-announcement-sent', () => {

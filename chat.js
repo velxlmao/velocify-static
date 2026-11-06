@@ -106,7 +106,8 @@
      finishedModeration(); retention(); expireMessages(); render(); controls();
     }
     if (data.type === 'named') { ownId = data.id; ready = true; owner = data.owner === true; name.value = data.name; error(); render(); controls(); }
-    if (data.type === 'announcement') { window.dispatchEvent(new CustomEvent('velx-announcements', { detail: [data.announcement] })); window.dispatchEvent(new Event('velx-announcement-sent')); }
+    if (data.type === 'announcement') window.dispatchEvent(new CustomEvent('velx-announcements', { detail: data.announcement ? [data.announcement] : [] }));
+    if (data.type === 'announcement-sent' || data.type === 'announcement-cleared') window.dispatchEvent(new CustomEvent('velx-announcement-sent', { detail: data.type }));
     if (data.type === 'message') {
      if (!messages.has(data.message.id) && data.message.authorId !== ownId) window.dispatchEvent(new CustomEvent('velx-chat-notification', { detail: data.message }));
      messages.set(data.message.id, data.message);
@@ -157,6 +158,11 @@
   if (!ready || !owner || socket?.readyState !== WebSocket.OPEN) { window.dispatchEvent(new CustomEvent('velx-announcement-error', { detail: 'Sign in as owner to send announcements.' })); return; }
   try { send({ type: 'announcement', title: event.detail.title, body: event.detail.body }); }
   catch { window.dispatchEvent(new CustomEvent('velx-announcement-error', { detail: 'Connection lost. Reconnect before sending.' })); }
+ });
+ window.addEventListener('velx-clear-announcement', () => {
+  if (!ready || !owner || !registered || socket?.readyState !== WebSocket.OPEN) { window.dispatchEvent(new CustomEvent('velx-announcement-error', { detail: 'Sign in as owner first.' })); return; }
+  try { send({ type: 'clear-announcement' }); }
+  catch { window.dispatchEvent(new CustomEvent('velx-announcement-error', { detail: 'Connection lost. Reconnect before clearing.' })); }
  });
  window.addEventListener('velx-ban-command', event => {
   if (!ready || !owner || !registered || socket?.readyState !== WebSocket.OPEN) { window.dispatchEvent(new CustomEvent('velx-ban-error', { detail: 'Sign in as owner first.' })); return; }

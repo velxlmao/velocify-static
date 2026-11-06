@@ -69,9 +69,9 @@
 		<script src="decoy.js?v=e2b29f7924f6" defer></script>
 		<script src="cloak.js?v=617ed136374f" defer></script>
 		<script src="pages.js?v=08a24dc2dfed" defer></script>
-		<script src="notifications.js?v=fa9303fe3bb9" defer></script>
+		<script src="notifications.js?v=3cc81fc97350" defer></script>
 		<script src="bans.js?v=0ff298605fa0" defer></script>
-		<script src="chat.js?v=3c80ed59c165" defer></script>
+		<script src="chat.js?v=30412464cc6a" defer></script>
 		<script src="welcome.js?v=66b0f54ab1d6" defer></script>
 	</head>
 
@@ -93,6 +93,8 @@
   <label for="announcement-body">body</label><textarea id="announcement-body" maxlength="2000" rows="6" required></textarea>
   <p id="announcement-error" role="alert" hidden></p>
   <button id="announcement-send" type="submit">send announcement</button>
+  <button id="announcement-clear" type="button" disabled>clear current announcement</button>
+  <p class="chat-note">new announcements replace the current one and expire after 24 hours.</p>
  </form>
  <form method="dialog"><button>close</button></form>
 </dialog>
